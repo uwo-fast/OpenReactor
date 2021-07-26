@@ -19,11 +19,11 @@ def index():
 @app.route("/graphs")
 def graphs():
 
-    title = "Numbers over time"
-    xLabel = "Time"
-    yLabel = "Number"
+    title1 = "Numbers over time"
+    xLabel1 = "Time"
+    yLabel1 = "Number"
 
-    data = [
+    data1 = [
         (1, 56),
         (2, 45),
         (3, 47),
@@ -33,10 +33,27 @@ def graphs():
         (7, 75)
     ]
 
-    time = [row[0] for row in data]
-    values = [row[1] for row in data]
+    time1 = [row[0] for row in data1]
+    values1 = [row[1] for row in data1]
 
-    return render_template("graphs.html", time=time, values=values, title=title)
+    title2 = "Numbers over time"
+    xLabel2 = "Time"
+    yLabel2 = "Number"
+
+    data2 = [
+        (1, 54),
+        (2, 46),
+        (3, 48),
+        (4, 93),
+        (5, 84),
+        (6, 87),
+        (7, 78)
+    ]
+
+    time2 = [row[0] for row in data2]
+    values2 = [row[1] for row in data2]
+
+    return render_template("graphs.html", time=time2, values=values2, title=title2)
 
 
 # About page for project

@@ -12,10 +12,10 @@
       labels: {{ time | safe }},
       datasets: [
         {
-          label: {{ title | safe }},
+          label: "{{ title | safe }}",
           data: {{ values | safe }},
           fill: false,
-          borderColor: "rgb(75, 192, 192)",
+          //borderColor: "rgb(75, 192, 192)",
           lineTension: 0.05
         }
       ]

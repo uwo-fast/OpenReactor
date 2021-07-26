@@ -7,6 +7,7 @@ Jinja2==3.0.1
 lazy-object-proxy==1.6.0
 MarkupSafe==2.0.1
 mccabe==0.6.1
+peewee==3.14.4
 pylint==2.9.5
 toml==0.10.2
 Werkzeug==2.0.1
