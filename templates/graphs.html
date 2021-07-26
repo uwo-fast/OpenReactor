@@ -1,0 +1,29 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<canvas id="lineChart" width="300" height="200"></canvas>
+
+<script>
+  var context = document.getElementById("lineChart").getContext("2d");
+  var lineChart = new Chart(context, {
+    type: "line",
+    data: {
+      labels: {{ time | safe }},
+      datasets: [
+        {
+          label: {{ title | safe }},
+          data: {{ values | safe }},
+          fill: false,
+          borderColor: "rgb(75, 192, 192)",
+          lineTension: 0.05
+        }
+      ]
+    },
+    options: {
+      responsive: false
+    }
+  });
+</script>
+
+{% endblock %}
