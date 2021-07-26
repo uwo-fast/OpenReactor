@@ -6,8 +6,10 @@ An easily extensible open source turbidostat with pH and dissolved oxygen contro
 # Clone and enter repository
 git clone https://gitlab.com/mtu-most/most_openreactor
 cd most_openreactor
+
 # Update all submodules
 git submodule update --init --recursive
+
 # Create and configure python virtual enviroment
 python3 -m venv venv
 source venv/bin/activate
