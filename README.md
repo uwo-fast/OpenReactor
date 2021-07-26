@@ -2,7 +2,9 @@
 An easily extensible open source turbidostat with pH and dissolved oxygen control, written in python3.
 
 ## Installation
-```bash
+
+### For Linux/macOS
+```sh
 # Clone and enter repository
 git clone https://gitlab.com/mtu-most/most_openreactor
 cd most_openreactor
@@ -16,19 +18,34 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+### For Windows
+```sh
+# Clone and enter repository
+git clone https://gitlab.com/mtu-most/most_openreactor
+cd most_openreactor
+
+# Update all submodules
+git submodule update --init --recursive
+
+# Create and configure python virtual enviroment
+python3 -m venv .venv
+source .venv/Scripts/activate
+pip install -r requirements.txt
+```
+
 ## Running
-```bash
+```sh
 export FLASK_APP=app; export FLASK_ENV=development; flask run
 ```
 
 ## Updating
-```bash
+```sh
 git pull --all
 git submodule foreach git pull
 ```
 
 ## Reseting python enviroment when done running
-```bash
+```sh
 deactivate
 ```
 
