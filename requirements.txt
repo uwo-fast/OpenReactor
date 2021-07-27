@@ -1,3 +1,6 @@
+Adafruit-Blinka==6.13.0
+Adafruit-PlatformDetect==3.15.3
+Adafruit-PureIO==1.1.9
 astroid==2.6.5
 click==8.0.1
 Flask==2.0.1
@@ -8,7 +11,11 @@ lazy-object-proxy==1.6.0
 MarkupSafe==2.0.1
 mccabe==0.6.1
 peewee==3.14.4
+pyftdi==0.53.2
 pylint==2.9.5
+pyserial==3.5
+pyusb==1.1.0
 toml==0.10.2
 Werkzeug==2.0.1
+wheel==0.36.2
 wrapt==1.12.1
