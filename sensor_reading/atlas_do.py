@@ -2,9 +2,9 @@ import busio
 import time
 from board import SCL, SDA
 
-addr = 99
+addr = 100
 R = 0x52
-delay = 0.9 # Time delay needed for the pH sensor
+delay = 0.6 # Time delay needed for the DO sensor
 
 i2c=busio.I2C(SCL, SDA, 400000)
 i2c.writeto(addr,bytes([R]),stop=False)
