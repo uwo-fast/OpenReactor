@@ -7,7 +7,7 @@ An easily extensible open source turbidostat with pH and dissolved oxygen contro
 ```sh
 # Install git and python3-venv
 sudo apt update; sudo apt upgrade -y
-sudo apt install -y git python3-venv
+sudo apt install -y git python3-venv sqlite3
 
 # Clone and enter repository
 git clone https://gitlab.com/mtu-most/most_openreactor
