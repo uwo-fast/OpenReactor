@@ -5,7 +5,6 @@ i2c=busio.I2C(SCL,SDA)
 print("Found devices on:",[hex(i) for i in i2c.scan()])
 devices = i2c.scan()
 for dev in devices:
-	i=0
 	print("Device: "+str(dev))
 	i2c.writeto(dev,bytes([0x52]),stop=False)
 	result=bytearray(31)
@@ -15,7 +14,6 @@ for dev in devices:
 	result=result[1:6]
 	result="".join(map(str,result))
 	print(result)
-	i+=i
 
 
 i2c.deinit()
