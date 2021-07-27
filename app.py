@@ -5,6 +5,7 @@ export FLASK_ENV=development
 flask run
 """
 
+import model
 from flask import Flask, render_template
 
 app = Flask(__name__)
