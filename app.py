@@ -61,3 +61,8 @@ def graphs():
 @app.route("/about")
 def about():
     return render_template("about.html")
+
+# About page for project
+@app.route("/test")
+def test():
+    return render_template("test.html")
