@@ -46,7 +46,7 @@ class I2C:
     """Stores the value of the latest sensor reading into the database."""
     def store(self):
         db = model.SensorData()
-        db.define_sensor(name, units)
+        db.define_sensor(self.name, self.units)
         db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
         db.close()
     
