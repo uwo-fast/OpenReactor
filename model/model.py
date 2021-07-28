@@ -43,7 +43,7 @@ class SensorData(object):
     def __init__(self):
         """Initialize access to the DHT sensor reading database."""
         # Connect to the database.
-        db.connect()
+        db.connect(reuse_if_open=True)
         # Make sure the tables are created (safe=True, otherwise they might be
         # deleted!).
         db.create_tables([Sensor, SensorReading], safe=True)

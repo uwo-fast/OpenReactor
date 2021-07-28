@@ -19,13 +19,13 @@ class I2C:
         self.value = 0.000
         self.time = datetime.datetime.now()
 
-        # self.db = model.SensorData()
-        # self.db.define_sensor(name, units)
+        self.db = model.SensorData()
+        self.db.define_sensor(name, units)
 
 
-    # """Deconstructor to close the connection to the database."""
-    # def __del__(self):
-    #     self.db.close()
+    """Deconstructor to close the connection to the database."""
+    def __del__(self):
+        self.db.close()
 
 
     """Reads from the sensor and places the reading in 'value'."""
@@ -45,10 +45,7 @@ class I2C:
     
     """Stores the value of the latest sensor reading into the database."""
     def store(self):
-        db = model.SensorData()
-        db.define_sensor(self.name, self.units)
-        db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
-        db.close()
+        self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
     
     """Prints the most recent sensor value and time of its reading"""
     def print_value(self):
