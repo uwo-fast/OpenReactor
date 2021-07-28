@@ -7,7 +7,7 @@ flask run
 
 import model
 from flask import Flask, render_template
-
+from model import Sensor,SensorReading
 app = Flask(__name__)
 
 # Home page
@@ -33,9 +33,17 @@ def graphs():
         (6, 81),
         (7, 75)
     ]
-
-    time1 = [row[0] for row in data1]
-    values1 = [row[1] for row in data1]
+    dataTime=[]
+    for Time in SensorReading.select().where(SensorReading.name=='pH').order_by(SensorReading.time):
+         dataTime.append(Time.time.timestamp())
+         print(Time.time.strftime("%c"))
+    dataData=[]
+    print(dataTime)
+    for Data in SensorReading.select().where(SensorReading.name=='pH').order_by(SensorReading.time):
+        dataData.append(Data.value)
+    print(dataData)
+    time1 = dataTime
+    values1 = dataData
 
     title2 = "Numbers over time"
     xLabel2 = "Time"
@@ -54,7 +62,7 @@ def graphs():
     time2 = [row[0] for row in data2]
     values2 = [row[1] for row in data2]
 
-    return render_template("graphs.html", time=time2, values=values2, title=title2)
+    return render_template("graphs.html", time=time1, values=values1, title=title1)
 
 
 # About page for project
