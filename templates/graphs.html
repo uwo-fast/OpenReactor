@@ -2,26 +2,36 @@
 
 {% block body %}
 
+
+
 <canvas id="lineChart1" width="400" height="300"></canvas>
 
 <script>
   var context = document.getElementById("lineChart1").getContext("2d");
-  var lineChart = new Chart(context, {
-    type: "line",
+  var lineChartFirst = new Chart(context, {
+    type: "scatter",
     data: {
-      labels: {{ time | safe }},
+      labels: {{ Time | safe }},
       datasets: [
         {
-          label: "{{ title | safe }}",
-          data: {{ values | safe }},
+          label: "{{ Title | safe }}",
+          data: {{Parsed | safe}},
           fill: false,
           //borderColor: "rgb(75, 192, 192)",
+          showLine:true,
           lineTension: 0.05
         }
-      ]
+      ],
+
     },
     options: {
       responsive: false,
+      scales: {
+         x:{type:'linear',
+            position:'bottom',
+            title:{display:true,text:'Time (hours)'}},
+      }
+      
     }
   });
 </script>
@@ -30,24 +40,34 @@
 
 <script>
   var context = document.getElementById("lineChart2").getContext("2d");
-  var lineChart = new Chart(context, {
-    type: "line",
+  var lineChartSecond = new Chart(context, {
+    type: "scatter",
     data: {
-      labels: {{ time | safe }},
+      labels: {{ Time2 | safe }},
       datasets: [
         {
-          label: "{{ title | safe }}",
-          data: {{ values | safe }},
+          label: "{{ Title2 | safe }}",
+          data: {{Parsed2 | safe}},
           fill: false,
           //borderColor: "rgb(75, 192, 192)",
+          showLine:true,
           lineTension: 0.05
         }
-      ]
+      ],
+
     },
     options: {
-      responsive: false
+      responsive: false,
+      scales: {
+         x:{type:'linear',
+            position:'bottom',
+            title:{display:true,text:'Time (hours)'}},
+      }
+      
     }
   });
 </script>
 
+<form action="/graphs" method="['GET','POST']">
+   <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-color="dark" id="updateButton">Update Graphs</button>
 {% endblock %}

@@ -1,0 +1,56 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<canvas id="lineChart1" width="400" height="300"></canvas>
+
+<script>
+  var context = document.getElementById("lineChart1").getContext("2d");
+  var lineChart = new Chart(context, {
+    type: "line",
+    data: {
+      labels: {{ time | safe }},
+      datasets: [
+        {
+          label: "{{ title | safe }}",
+          data: {{ values | safe }},
+          fill: false,
+          //borderColor: "rgb(75, 192, 192)",
+          lineTension: 0.05
+        }
+      ]
+    },
+    options: {
+      responsive: false,
+      scales: {
+         x:{
+            type:'time',
+    }
+  });
+</script>
+
+<canvas id="lineChart2" width="400" height="300"></canvas>
+
+<script>
+  var context = document.getElementById("lineChart2").getContext("2d");
+  var lineChart = new Chart(context, {
+    type: "line",
+    data: {
+      labels: {{ time | safe }},
+      datasets: [
+        {
+          label: "{{ title | safe }}",
+          data: {{ values | safe }},
+          fill: false,
+          //borderColor: "rgb(75, 192, 192)",
+          lineTension: 0.05
+        }
+      ]
+    },
+    options: {
+      responsive: false
+    }
+  });
+</script>
+
+{% endblock %}
