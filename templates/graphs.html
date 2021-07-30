@@ -3,12 +3,12 @@
 {% block body %}
 
 
-
 <canvas id="lineChart1" width="400" height="300"></canvas>
+<canvas id="lineChart2" width="400" height="300"></canvas>
 
 <script>
   var context = document.getElementById("lineChart1").getContext("2d");
-  var lineChartFirst = new Chart(context, {
+  var lineChart1 = new Chart(context, {
     type: "scatter",
     data: {
       labels: {{ Time | safe }},
@@ -34,13 +34,8 @@
       
     }
   });
-</script>
-
-<canvas id="lineChart2" width="400" height="300"></canvas>
-
-<script>
   var context = document.getElementById("lineChart2").getContext("2d");
-  var lineChartSecond = new Chart(context, {
+  var lineChart2 = new Chart(context, {
     type: "scatter",
     data: {
       labels: {{ Time2 | safe }},
@@ -66,8 +61,30 @@
       
     }
   });
-</script>
 
-<form action="/graphs" method="['GET','POST']">
-   <button type="submit" class="btn btn-outline-primary" data-mdb-ripple-color="dark" id="updateButton">Update Graphs</button>
+
+
+
+var intervalID = setInterval(update_values,1000);
+function update_values(){
+    $.getJSON('/update',
+    function(dataNew) {
+         $('#Time').text(dataNew.Time);
+         $('#Values').text(dataNew.Values);
+         $('#Title').text(dataNew.Title);
+         $('#Parsed').text(dataNew.Parsed);
+         $('#Time2').text(dataNew.Time2);
+         $('#Values2').text(dataNew.Values2);
+         $('#Title2').text(dataNew.Title2);
+         $('#Parsed2').text(dataNew.Parsed2);
+         console.log(dataNew)
+    lineChart1.data.datasets[0].data=dataNew.Parsed
+    lineChart2.data.datasets[0].data=dataNew.Parsed2
+         });
+    lineChart1.update();
+    lineChart2.update();
+       }
+
+
+</script>
 {% endblock %}

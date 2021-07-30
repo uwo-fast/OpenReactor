@@ -4,8 +4,9 @@ export FLASK_APP=app
 export FLASK_ENV=development
 flask run
 """
-
+import json
 import model
+import flask
 from flask import Flask, render_template
 from model import Sensor,SensorReading
 app = Flask(__name__)
@@ -15,10 +16,17 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
-
+@app.route("/update",methods=['GET'])
+def update():
+        (time1,values1,title1,toParse,time2,values2,title2,toParse2)=graphsUpdate()
+        return json.dumps({'Time':time1,'Values':values1, 'Parsed':toParse,'Time2':time2,'Values2':values2,'Title2':title2,'Parsed2':toParse2})
 # Graphs page
-@app.route("/graphs")
+@app.route("/graphs",methods=['GET','POST'])
 def graphs():
+    (time1,values1,title1,toParse,time2,values2,title2,toParse2)=graphsUpdate()
+    return render_template("graphs.html", Time=time1, Values=values1, Title=title1,Parsed=toParse,Time2=time2,Values2=values2,Title2=title2,Parsed2=toParse2)
+    #return flask.jsonify({'payload':json.dumps({'Time':time1,'Values':values1, 'Parsed':toParse,'Time2':time2,'Values2':values2,'Title2':title2,'Parsed2':toParse2})})
+def graphsUpdate():
     toDisplay=['pH','Dissolved Oxygen']
 
     
@@ -69,8 +77,7 @@ def graphs():
         toParse2.append((dataTime2[i],values2[i]))
         print(toParse2[i])
 
-    return render_template("graphs.html", Time=time1, Values=values1, Title=title1,Parsed=toParse,Time2=time2,Values2=values2,Title2=title2,Parsed2=toParse2)
-
+    return time1,values1,title1, toParse, time2,values2,title2,toParse2
 class dataPoints:
    def __init__(self,time,value):
       self.x=time
