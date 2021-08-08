@@ -1,21 +1,37 @@
-{% extends 'layout.html' %}
+ {% extends 'layout.html' %}
 
 {% block body %}
 
+<select class="form-select" id="DeviceDrop">
+        <option selected>Select Device 1</option>
+</select>
 
 <canvas id="lineChart1" width="400" height="300"></canvas>
+<select class="form-select" id="DeviceDrop2">
+        <option selected>Select Device 2</option>
+</select>
 <canvas id="lineChart2" width="400" height="300"></canvas>
 
 <script>
+  function updateList() {
+        dev = {{Devices | safe}}
+        console.log(dev);
+        for (let i =0; i<dev.length;i++){
+                var option = new Option(dev[i],i,false,false);
+                $('#DeviceDrop').append(option);
+
+        }}
+        
+  
   var context = document.getElementById("lineChart1").getContext("2d");
   var lineChart1 = new Chart(context, {
     type: "scatter",
     data: {
-      labels: {{ Time | safe }},
+      labels: "Graph",
       datasets: [
         {
-          label: "{{ Title | safe }}",
-          data: {{Parsed | safe}},
+          label: "Point",
+          data: {x:0,y:0},
           fill: false,
           //borderColor: "rgb(75, 192, 192)",
           showLine:true,
@@ -34,15 +50,16 @@
       
     }
   });
+  updateList();
   var context = document.getElementById("lineChart2").getContext("2d");
   var lineChart2 = new Chart(context, {
     type: "scatter",
     data: {
-      labels: {{ Time2 | safe }},
+      labels: "Graph",
       datasets: [
         {
-          label: "{{ Title2 | safe }}",
-          data: {{Parsed2 | safe}},
+          label: "Point",
+          data: {x:0,y:0},
           fill: false,
           //borderColor: "rgb(75, 192, 192)",
           showLine:true,
@@ -65,7 +82,8 @@
 
 
 
-var intervalID = setInterval(update_values,1000);
+update_values();
+var intervalID = setInterval(update_values,10000);
 function update_values(){
     $.getJSON('/update',
     function(dataNew) {
@@ -78,11 +96,16 @@ function update_values(){
          $('#Title2').text(dataNew.Title2);
          $('#Parsed2').text(dataNew.Parsed2);
          console.log(dataNew)
-    lineChart1.data.datasets[0].data=dataNew.Parsed
-    lineChart2.data.datasets[0].data=dataNew.Parsed2
-         });
+         var selected1 = $('DeviceDrop').find(":selected").text();
+         console.log(selected1)
+    lineChart1.data.datasets[0].data=dataNew.Parsed;
+    lineChart2.data.datasets[0].data=dataNew.Parsed2;
+    lineChart1.data.datasets[0].label=dataNew.Title;
+    lineChart2.data.datasets[0].label=dataNew.Title2;
     lineChart1.update();
     lineChart2.update();
+         });
+
        }
 
 

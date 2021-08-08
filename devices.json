@@ -1,0 +1,6 @@
+{ "I2CDEVICES":["pH","Dissolved Oxygen"]
+   "ADDRESSES":{
+      "pH":99,
+      "Dissolved Oxygen":100
+      }
+}
