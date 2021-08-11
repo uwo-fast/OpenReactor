@@ -1,3 +1,0 @@
-[submodule "sensor/atlas_scientific"]
-	path = sensor/atlas_scientific
-	url = https://github.com/AtlasScientific/Raspberry-Pi-sample-code.git
