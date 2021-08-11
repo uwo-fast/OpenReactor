@@ -1,3 +1,6 @@
 [submodule "openscad/libs/threads-scad"]
 	path = openscad/libs/threads-scad
 	url = https://github.com/rcolyer/threads-scad.git
+[submodule "openscad/libs/smooth-prim"]
+	path = openscad/libs/smooth-prim
+	url = https://github.com/rcolyer/smooth-prim.git
