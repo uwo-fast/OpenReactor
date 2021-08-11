@@ -1,0 +1,26 @@
+{
+  "name": "most_openreactor",
+  "version": "1.0.0",
+  "description": "Easily extensible opensource bioreactor.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/mtu-most/most_openreactor.git"
+  },
+  "author": "Wilson Holmes, Etienne Michels",
+  "license": "GPL-2.0-only",
+  "bugs": {
+    "url": "https://gitlab.com/mtu-most/most_openreactor/issues"
+  },
+  "homepage": "https://gitlab.com/mtu-most/most_openreactor#readme",
+  "dependencies": {
+    "@popperjs/core": "^2.9.3",
+    "bootstrap": "^5.1.0",
+    "chart.js": "^3.5.0",
+    "jquery": "^3.6.0",
+    "moment": "^2.29.1"
+  }
+}

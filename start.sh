@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Source the python enviroment
-source .venv/Scripts/activate
+source .venv/bin/activate
 
 # Export the required enviroment variables
 export FLASK_APP=app;
