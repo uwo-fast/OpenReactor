@@ -5,7 +5,7 @@
 <select class="form-select" id="DeviceDrop">
         <option selected>Select Device 1</option>
 </select>
-
+<input type="text" id="output"/>
 <canvas id="lineChart1" width="400" height="300"></canvas>
 <select class="form-select" id="DeviceDrop2">
         <option selected>Select Device 2</option>
@@ -19,8 +19,9 @@
         for (let i =0; i<dev.length;i++){
                 var option = new Option(dev[i],i,false,false);
                 $('#DeviceDrop').append(option);
-
-        }}
+        }
+        //$('#DeviceDrop').val(0);
+        }
         
   
   var context = document.getElementById("lineChart1").getContext("2d");
@@ -80,7 +81,23 @@
   });
 
 
-
+$('#DeviceDrop').change(function (){
+        dev = {{Devices | safe}}
+        $('#output').val(dev[$(this).find('option:selected').val()]);
+        sel=[];
+        sel.push(dev[$(this).find('option:selected').val()]);
+        console.log(sel);
+        sel_data=JSON.stringify(sel);
+        console.log(sel_data);
+        $.ajax({
+                url: '/update',
+                type: 'post',
+                contentType: 'application/json',
+                dataType:'json',
+                data:sel_data
+                });
+        update_values();
+});
 
 update_values();
 var intervalID = setInterval(update_values,10000);
@@ -96,8 +113,6 @@ function update_values(){
          $('#Title2').text(dataNew.Title2);
          $('#Parsed2').text(dataNew.Parsed2);
          console.log(dataNew)
-         var selected1 = $('DeviceDrop').find(":selected").text();
-         console.log(selected1)
     lineChart1.data.datasets[0].data=dataNew.Parsed;
     lineChart2.data.datasets[0].data=dataNew.Parsed2;
     lineChart1.data.datasets[0].label=dataNew.Title;
