@@ -1,4 +1,4 @@
-$fn=32;
+$fn=64;
 bigTubeNippleConeH = 3.4;
 bigTubeNippleConeDia1 = 3.6;
 bigTubeNippleConeDia2 = 2.6;
@@ -26,4 +26,4 @@ translate([0,0,bigTubeNippleBodyH+bigTubeNippleConeH+bigTubeNippleBodyH]){
 cylinder(h=5,d1=bigTubeNippleInDia,d2=bigTubeNippleConeDia1*2-bigTubeNippleInDia,center=true);
 }}
 
-translate([10,0,0]){sphere(d=bigTubeNippleInDia+0.2);}
+translate([10,0,(bigTubeNippleInDia+0.2)/2]){sphere(d=bigTubeNippleInDia+0.2);}
