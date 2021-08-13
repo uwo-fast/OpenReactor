@@ -1,5 +1,8 @@
-$fn=32;
+$fn=64;
 
+include <libs/BOSL/constants.scad>
+use <libs/BOSL/shapes.scad>
+use <libs/BOSL/transforms.scad>
 use <libs/threads-scad/threads.scad>
 use <libs/smooth-prim/smooth_prim.scad>
 
@@ -24,6 +27,24 @@ vialBodySmoothRad = 3;
 module vial() {
         SmoothCylinder(10,20,3);
 
+}
+
+nippleConeH = 3.4;
+nippleConeDia1 = 3.6;
+nippleConeDia2 = 2.6;
+nippleBodyH = 1.75;
+nippleBodyOutDia = 2.9;
+nippleInDia = 1.5;
+
+module nipple() {
+    up(nippleBodyH)
+    difference() {
+        union() {
+            cyl(h=nippleConeH, d1=nippleConeDia1, d2=nippleConeDia2, align=V_UP);
+            downcyl(h=nippleBodyH, d=nippleBodyOutDia);
+        }
+        down(nippleBodyH)cyl(h=nippleBodyH+nippleConeH, d=nippleInDia, align=V_UP);
+    }
 }
 
 bigTubeNippleConeH = 3.4;
@@ -153,7 +174,7 @@ module lidHoles() {
 }
 
 // Need at least 6mm of space between every nipples center to center
-module lidNipples() {
+module lidNipplesOld() {
     union() {
         translate([0,10,0])bigTubeNipple();
         translate([-3,7,0])bigTubeNipple();
@@ -162,6 +183,11 @@ module lidNipples() {
         translate([3,-12,0])bigTubeNipple();
         translate([-3,-12,0])bigTubeNipple();
     }
+}
+
+module lidNipples() {
+    //place_copies([[0,10,0],[-3.7.0],[3,7,0],[0,4,0],[3,-12,0],[-3,-12,0]]) nipple();
+    place_copies([[0,10,0], [-3,7,0], [3,7,0], [0,4,0], [3,-12,0], [-3,-12,0]]) nipple();
 }
 
 //lid();

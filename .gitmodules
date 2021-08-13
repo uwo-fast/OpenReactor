@@ -4,3 +4,6 @@
 [submodule "openscad/libs/smooth-prim"]
 	path = openscad/libs/smooth-prim
 	url = https://github.com/rcolyer/smooth-prim.git
+[submodule "openscad/libs/BOSL"]
+	path = openscad/libs/BOSL
+	url = https://github.com/revarbat/BOSL.git
