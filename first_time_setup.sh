@@ -14,4 +14,4 @@ pip install wheel
 pip install -r requirements.txt
 
 # Install NPM packages
-npm install
+npm i ./static
