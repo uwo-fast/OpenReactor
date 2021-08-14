@@ -2,125 +2,111 @@
 
 {% block body %}
 
-<select class="form-select" id="DeviceDrop">
-        <option selected>Select Device 1</option>
-</select>
-<input type="text" id="output"/>
-<canvas id="lineChart1" width="400" height="300"></canvas>
-<select class="form-select" id="DeviceDrop2">
-        <option selected>Select Device 2</option>
-</select>
-<canvas id="lineChart2" width="400" height="300"></canvas>
-
+<button class="btn btn-primary btn-lg" type="button" onclick="newCanvas(charts)">New Graph</button>
+<input type="text" id="output" hidden/>
+<br>
 <script>
-  function updateList() {
-        dev = {{Devices | safe}}
-        console.log(dev);
-        for (let i =0; i<dev.length;i++){
+  charts=[];
+  numCanvas=0;
+  function newCanvas(chartArray){
+        var newDrop = document.createElement('select');
+        var newCan = document.createElement('canvas');
+        newDrop.class ="form-select form-select-lg mb-3";
+                dev = {{Devices | safe}}
+                var sel = new Option("Sensor","",false,false);
+                newDrop.append(sel);
+                for (let i =0; i<dev.length;i++){
                 var option = new Option(dev[i],i,false,false);
-                $('#DeviceDrop').append(option);
-        }
-        //$('#DeviceDrop').val(0);
-        }
-        
-  
-  var context = document.getElementById("lineChart1").getContext("2d");
-  var lineChart1 = new Chart(context, {
-    type: "scatter",
-    data: {
-      labels: "Graph",
-      datasets: [
-        {
-          label: "Point",
-          data: {x:0,y:0},
-          fill: false,
-          //borderColor: "rgb(75, 192, 192)",
-          showLine:true,
-          lineTension: 0.05
-        }
-      ],
+                newDrop.append(option);
+                }
+        newDrop.id = "Drop" + numCanvas;
+        newCan.id ="Chart"+numCanvas;
+        newCan.height = 300;
+        newCan.width = 400;
+        var context = newCan.getContext("2d");
+        const locale = document.getElementById("cont");
+        locale.appendChild(newDrop);
+        locale.appendChild(newCan);
+        $("#Drop"+numCanvas).data('data',numCanvas)
+        name = "Chart"+numCanvas;
+        var name = new Chart(context,{
+                type:"scatter",
+                    data: {
+                        labels: "Graph",
+                        datasets: [
+                         {
+                                 label: "Point",
+                                 data: {x:0,y:0},
+                                 fill: false,
+                                 showLine:true,
+                                 lineTension: 0.05
+                        }
+                   ],
 
-    },
-    options: {
-      responsive: false,
-      scales: {
-         x:{type:'linear',
-            position:'bottom',
-            title:{display:true,text:'Time (hours)'}},
-      }
-      
-    }
-  });
-  updateList();
-  var context = document.getElementById("lineChart2").getContext("2d");
-  var lineChart2 = new Chart(context, {
-    type: "scatter",
-    data: {
-      labels: "Graph",
-      datasets: [
-        {
-          label: "Point",
-          data: {x:0,y:0},
-          fill: false,
-          //borderColor: "rgb(75, 192, 192)",
-          showLine:true,
-          lineTension: 0.05
-        }
-      ],
-
-    },
-    options: {
-      responsive: false,
-      scales: {
-         x:{type:'linear',
-            position:'bottom',
-            title:{display:true,text:'Time (hours)'}},
-      }
-      
-    }
-  });
-
-
-$('#DeviceDrop').change(function (){
-        dev = {{Devices | safe}}
-        $('#output').val(dev[$(this).find('option:selected').val()]);
-        sel=[];
-        sel.push(dev[$(this).find('option:selected').val()]);
-        console.log(sel);
-        sel_data=JSON.stringify(sel);
-        console.log(sel_data);
-        $.ajax({
-                url: '/update',
-                type: 'post',
-                contentType: 'application/json',
-                dataType:'json',
-                data:sel_data
-                });
-        update_values();
+                    },
+                  options: {
+                    responsive: false,
+                   scales: {
+                     x:{type:'linear',
+                         position:'bottom',
+                   title:{display:true,text:'Time (hours)'}},
+                     }
+              
+                    }
+        });
+        chartArray.push(name);
+        $(newDrop).change(function (){
+            dev = {{Devices | safe}}
+            $('#output').val(dev[$(this).find('option:selected').val()]);
+            sel=[];
+            sel.push(dev[$(this).find('option:selected').val()]);
+            sel_data=JSON.stringify(sel);
+            num=$(this).data().data;
+            $.ajax({
+                  url: '/update/'+num,
+                  type: 'post',
+                  contentType: 'application/json',
+                  dataType:'json',
+                  data:sel_data,
+                  success:function(){update_values([name],num);}
+                  });
 });
+  toSend=[];
+  toSend.push(numCanvas);
+  toSend=JSON.stringify(toSend);
+  $.ajax({
+        url: '/add',
+        type: 'post',
+        contentType: 'application/json',
+        dataType:'json',
+        data:toSend
+  });
+  numCanvas++;
+  //update_values([name],0);
+}
 
-update_values();
-var intervalID = setInterval(update_values,10000);
-function update_values(){
-    $.getJSON('/update',
+
+
+update_values(charts);
+var intervalID = setInterval(function(){
+        for (let i=0;i<charts.length;i++){
+                update_values([charts[i]],i)}
+        },10000);
+function update_values(numGraphs,j){
+   for (let i=0;i<numGraphs.length;i++){
+    $.getJSON('/update/'+j,
     function(dataNew) {
          $('#Time').text(dataNew.Time);
          $('#Values').text(dataNew.Values);
          $('#Title').text(dataNew.Title);
          $('#Parsed').text(dataNew.Parsed);
-         $('#Time2').text(dataNew.Time2);
-         $('#Values2').text(dataNew.Values2);
-         $('#Title2').text(dataNew.Title2);
-         $('#Parsed2').text(dataNew.Parsed2);
          console.log(dataNew)
-    lineChart1.data.datasets[0].data=dataNew.Parsed;
-    lineChart2.data.datasets[0].data=dataNew.Parsed2;
-    lineChart1.data.datasets[0].label=dataNew.Title;
-    lineChart2.data.datasets[0].label=dataNew.Title2;
-    lineChart1.update();
-    lineChart2.update();
+    numGraphs[0].data.datasets[0].data=dataNew.Parsed;
+    numGraphs[0].data.datasets[0].label=dataNew.Title;
+  if($('#Drop'+j).val()!=""){
+    numGraphs[0].update();}
          });
-
+ }
        }
 
 

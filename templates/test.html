@@ -3,5 +3,25 @@
 {% block body %}
 
 <h1> TEST </h1>
+<button id="but1" class="btn btn-primary btn-lg" onClick="loadGraph()">Add Graph</button>
+<div id="forGraphs" />
+<p id="testing">test</p>
 
+
+<script>
+
+
+function loadGraph() {
+        var canvas =document.createElement("canvas");
+        canvas.width=300;
+        canvas.height=300;
+        var ctx = canvas.getContext("2d");
+        ctx.fillStyle = "rgb(200,0,0)";
+        ctx.fillRect(10,10,55,50);
+        document.body.appendChild(canvas);
+
+}
+
+</script>
 {% endblock %}
+
