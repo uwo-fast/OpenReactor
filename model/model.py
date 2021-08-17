@@ -36,7 +36,8 @@ class SensorReading(Model):
 
 
 class SensorData(object):
-    """Main data access layer class which provides functions to query DHT sensor
+    """
+    Main data access layer class which provides functions to query DHT sensor
     and sensor reading data from the database.
     """
 
