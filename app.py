@@ -30,7 +30,7 @@ def update(graphID):
                 return json.dumps({'Time':time,'Values':values,'Title':title, 'Parsed':toParse})
         if request.method == 'POST':
                 data=request.json
-                print("data:"+data[0])
+                print(data[0])
                 toDisplay[int(graphID)]=data[0]
                 return flask.jsonify(data)
 
@@ -42,7 +42,7 @@ def add():
         if data==0:
                 toDisplay.clear()
         if (len(toDisplay))==data:
-                toDisplay.append("pH")
+                toDisplay.append("-1")
         return flask.jsonify(data)
                 
 # Graphs page
@@ -53,33 +53,32 @@ def graphs():
     #(time1,values1,title1,toParse,time2,values2,title2,toParse2)=graphsUpdate()
     #return render_template("graphs.html", Time=time1, Values=values1, Title=title1,Parsed=toParse,Time2=time2,Values2=values2,Title2=title2,Parsed2=toParse2)
 def graphsUpdate(toDisplay):
-    
-    
-    
-    title1 = toDisplay+" over time"
-    dataTime=[]
-    for Time in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
-         dataTime.append(Time.time.timestamp())
-    dataData=[]
-    
-    for Data in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
-        dataData.append(Data.value)
-    values1 = dataData
-    time1=[]
-    time1=dataTime
-    first=time1[0]
-    for i in range(len(time1)):
-        time1[i]=(time1[i]-first)/3600
-    toParse=[]
-    for i in range(len(dataTime)):
-        toParse.append((dataTime[i],values1[i]))
-    title2 = toDisplay[1]+" over time"
-    print('Fetched Data')
+    print(toDisplay)
+    if toDisplay=="-1":
+        time1=[]
+        values1=[]
+        title1=[]
+        toParse=[]
+    else:
+        title1 = toDisplay+" over time"
+        dataTime=[]
+        for Time in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
+            dataTime.append(Time.time.timestamp())
+        dataData=[]
+        
+        for Data in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
+            dataData.append(Data.value)
+        values1 = dataData
+        time1=[]
+        time1=dataTime
+        first=time1[0]
+        for i in range(len(time1)):
+            time1[i]=(time1[i]-first)/3600
+        toParse=[]
+        for i in range(len(dataTime)):
+            toParse.append((dataTime[i],values1[i]))
+        print('Fetched Data')
     return time1,values1,title1, toParse
-class dataPoints:
-   def __init__(self,time,value):
-      self.x=time
-      self.y=value
 # About page for project
 @app.route("/about")
 def about():

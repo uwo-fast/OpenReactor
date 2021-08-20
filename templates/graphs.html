@@ -9,9 +9,13 @@
   charts=[];
   numCanvas=0;
   function newCanvas(chartArray){
+        var newDiv = document.createElement('div');
         var newDrop = document.createElement('select');
         var newCan = document.createElement('canvas');
-        newDrop.class ="form-select form-select-lg mb-3";
+        var newBut = document.createElement('button');
+        newBut.className = "btn btn-danger";
+        newBut.innerHTML="x"
+        newDrop.className ="form-select form-select-lg mb-3";
                 dev = {{Devices | safe}}
                 var sel = new Option("Sensor","",false,false);
                 newDrop.append(sel);
@@ -21,13 +25,30 @@
                 }
         newDrop.id = "Drop" + numCanvas;
         newCan.id ="Chart"+numCanvas;
-        newCan.height = 300;
-        newCan.width = 400;
+        newDiv.id ="Div"+numCanvas;
+        newBut.id = "But"+numCanvas;
         var context = newCan.getContext("2d");
-        const locale = document.getElementById("cont");
+        document.getElementById("cont").appendChild(newDiv);
+        const locale = document.getElementById("Div"+numCanvas);
         locale.appendChild(newDrop);
+        locale.appendChild(newBut);
         locale.appendChild(newCan);
-        $("#Drop"+numCanvas).data('data',numCanvas)
+        $("#Div"+numCanvas).css({width:"50%",height:"400px",float:"left"});
+        $("#Drop"+numCanvas).css({width:"45%",float:"left"});
+        $("#But"+numCanvas).css({width:"5%",height:newDrop.clientHeight+"px"});
+        newCan.style.width="50%";
+        newCan.style.marginLeft="25%";
+        newCan.style.height=newCan.clientWidth/4 +"%"
+        newDrop.style.marginLeft="25%";
+        $("#Drop"+numCanvas).data('data',numCanvas);
+        $("#But"+numCanvas).data('data',numCanvas);
+        newBut.onclick=function(){
+                console.log("id:"+$(this).data().data)
+                document.getElementById("Drop"+$(this).data().data).selectedIndex=0;
+                document.getElementById("Drop"+$(this).data().data).dispatchEvent(new Event('change'));
+                document.getElementById("Div"+$(this).data().data).remove();
+
+        };
         name = "Chart"+numCanvas;
         var name = new Chart(context,{
                 type:"scatter",
@@ -35,7 +56,7 @@
                         labels: "Graph",
                         datasets: [
                          {
-                                 label: "Point",
+                                 label: "",
                                  data: {x:0,y:0},
                                  fill: false,
                                  showLine:true,
@@ -57,9 +78,10 @@
         chartArray.push(name);
         $(newDrop).change(function (){
             dev = {{Devices | safe}}
-            $('#output').val(dev[$(this).find('option:selected').val()]);
             sel=[];
             sel.push(dev[$(this).find('option:selected').val()]);
+            if(sel[0]==undefined){sel[0]="-1"};
+            console.log(sel)
             sel_data=JSON.stringify(sel);
             num=$(this).data().data;
             $.ajax({
@@ -85,8 +107,6 @@
   //update_values([name],0);
 }
 
-
-
 update_values(charts);
 var intervalID = setInterval(function(){
         for (let i=0;i<charts.length;i++){
@@ -103,8 +123,7 @@ function update_values(numGraphs,j){
          console.log(dataNew)
     numGraphs[0].data.datasets[0].data=dataNew.Parsed;
     numGraphs[0].data.datasets[0].label=dataNew.Title;
-  if($('#Drop'+j).val()!=""){
-    numGraphs[0].update();}
+    numGraphs[0].update();
          });
  }
        }
