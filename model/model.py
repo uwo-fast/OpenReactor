@@ -9,7 +9,7 @@
 from peewee import *
 
 
-db = SqliteDatabase('openreactor.db', check_same_thread=False)
+db = SqliteDatabase('../openreactor.db', check_same_thread=False)
 
 
 # Define data model classes that inherit from the Peewee ORM Model class.
@@ -34,6 +34,12 @@ class SensorReading(Model):
     class Meta:
         database = db
 
+class Control(Model):
+    name = CharField()
+    target = FloatField()
+
+    class Meta:
+        database = db
 
 class SensorData(object):
     """
@@ -47,7 +53,7 @@ class SensorData(object):
         db.connect(reuse_if_open=True)
         # Make sure the tables are created (safe=True, otherwise they might be
         # deleted!).
-        db.create_tables([Sensor, SensorReading], safe=True)
+        db.create_tables([Sensor, SensorReading,Control], safe=True)
 
     def define_sensor(self, name, units):
         """Define the specified sensor and add it to the database.  If a sensor
@@ -57,6 +63,13 @@ class SensorData(object):
         # a sensor the specified name, type, pin and create it if not found.
         # Very handy!
         Sensor.get_or_create(name=name, units=units)
+
+    def define_control(self,name,target):
+
+        Control.get_or_create(name=name,target=target)
+
+    def get_control(self):
+        return Control.select()
 
     def get_sensors(self):
         """Return a list of all the sensors defined in the database.

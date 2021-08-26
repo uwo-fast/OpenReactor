@@ -4,9 +4,11 @@ from model import Sensor,SensorReading
 do = sensor.I2C(name="Dissolved Oxygen", units="% Oxygen", address=100, delay=0.6)
 ph = sensor.I2C(name="pH", units="pH")
 
-do.read()
+#do.read()
+do.readFalse()
 do.store()
-ph.read()
+#ph.read()
+ph.readFalse()
 ph.store()
 
 do.print_info()

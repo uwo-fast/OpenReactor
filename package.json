@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "most_openreactor": "file:static"
+  }
+}

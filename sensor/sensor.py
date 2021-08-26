@@ -42,6 +42,9 @@ class I2C:
         self.time = datetime.datetime.now()
         i2c.deinit()
 
+    def readFalse(self):
+        self.value=10.0
+        self.time = datetime.datetime.now()
     
     """Stores the value of the latest sensor reading into the database."""
     def store(self):

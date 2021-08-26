@@ -14,7 +14,7 @@
         var newCan = document.createElement('canvas');
         var newBut = document.createElement('button');
         newBut.className = "btn btn-danger";
-        newBut.innerHTML="x"
+        newBut.innerHTML="X"
         newDrop.className ="form-select form-select-lg mb-3";
                 dev = {{Devices | safe}}
                 var sel = new Option("Sensor","",false,false);
@@ -33,13 +33,14 @@
         locale.appendChild(newDrop);
         locale.appendChild(newBut);
         locale.appendChild(newCan);
-        $("#Div"+numCanvas).css({width:"50%",height:"400px",float:"left"});
-        $("#Drop"+numCanvas).css({width:"45%",float:"left"});
-        $("#But"+numCanvas).css({width:"5%",height:newDrop.clientHeight+"px"});
-        newCan.style.width="50%";
-        newCan.style.marginLeft="25%";
-        newCan.style.height=newCan.clientWidth/4 +"%"
-        newDrop.style.marginLeft="25%";
+        $("#Div"+numCanvas).css({width:"500",height:"400px",display:"flex",float:"left"});
+        $("#Drop"+numCanvas).css({width:"300px",float:"left",height:"40px"});
+        $("#But"+numCanvas).css({width:"40px",height:"40px"});
+        newDiv.style.flexWrap="wrap";
+        newCan.style.width="400px";
+        newCan.style.marginLeft="50px";
+        newCan.style.height="300px"
+        newDrop.style.marginLeft="50px";
         $("#Drop"+numCanvas).data('data',numCanvas);
         $("#But"+numCanvas).data('data',numCanvas);
         newBut.onclick=function(){
@@ -85,7 +86,7 @@
             sel_data=JSON.stringify(sel);
             num=$(this).data().data;
             $.ajax({
-                  url: '/update/'+num,
+                  url: '/update/graphs/'+num,
                   type: 'post',
                   contentType: 'application/json',
                   dataType:'json',
@@ -114,7 +115,7 @@ var intervalID = setInterval(function(){
         },10000);
 function update_values(numGraphs,j){
    for (let i=0;i<numGraphs.length;i++){
-    $.getJSON('/update/'+j,
+    $.getJSON('/update/graphs/'+j,
     function(dataNew) {
          $('#Time').text(dataNew.Time);
          $('#Values').text(dataNew.Values);

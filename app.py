@@ -5,23 +5,22 @@ export FLASK_ENV=development
 flask run
 """
 import json
-import model
 import flask
 from flask import Flask, render_template, request
-from model import Sensor,SensorReading
+from model import Sensor,SensorReading,Control,SensorData
 app = Flask(__name__)
 toDisplay=[]
 devices=[]
 for dev in Sensor.select():
     devices.append(dev.name)
 print("Loaded app.py")
-
+Data=SensorData()
 # Home page
 @app.route("/")
 def index():
     return render_template("index.html")
 
-@app.route("/update/<graphID>",methods=['GET','POST'])
+@app.route("/update/graphs/<graphID>",methods=['GET','POST'])
 
 def update(graphID):
         if request.method== 'GET':
@@ -85,6 +84,32 @@ def about():
     return render_template("about.html")
 
 # About page for project
-@app.route("/test")
-def test():
-    return render_template("test.html")
+@app.route("/controls")
+def controls():
+    sensors = []
+    values = []
+    controls =[]
+    targets = []
+    for dev in Sensor.select():
+        sensors.append(dev.name)
+        print(dev.name)
+        values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc())[0].value)
+    for con in Control.select():
+         controls.append(con.name)
+         values.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
+    return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Targets=targets)
+@app.route("/update/controls",methods=['GET','POST'])
+def updateControls():
+    if request.method== 'GET':
+        sensors = []
+        values = []
+        controls = []
+        targets = []
+        for dev in Sensor.select():
+            sensors.append(dev.name)
+            print(dev.name)
+            values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc())[0].value)
+        for con in Control.select():
+            controls.append(con.name)
+            values.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
+        return json.dumps({'sen':sensors,'val':values,'con':controls,'tar':targets})

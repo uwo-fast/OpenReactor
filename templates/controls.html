@@ -1,0 +1,59 @@
+{% extends 'layout.html' %}
+{% block body %}
+<div id="leftBorder"> </div>
+<div id="rightBorder"></div>
+<script>
+$("#leftBorder").css({width:"50%",display:"float",flexWrap:"wrap",float:"left"});
+$("#rightBorder").css({width:"50%",display:"float",flexWrap:"wrap",float:"right"});
+$("#leftBorder").append("<div id=titleL>Readings<div>");
+$("#titleL").css({fontWeight:"bold",textAlign:"center",fontSize:"2.5em"});
+$("#rightBorder").append("<div id=titleR>Controls<div>");
+$("#titleR").css({fontWeight:"bold",textAlign:"center",fontSize:"2.5em"});
+
+sensors = {{Sensors | safe}}
+values = {{Values | safe}}
+controls = {{Controls | safe}}
+targets = {{Targets | safe}}
+function basicDisplay(indexing,object,side){
+
+    for(let i = 0;i<indexing.length;i++){
+        var newDiv = $("<div id='Div"+object[i]+"'></div>");
+        newDiv.append(" "+object[i]+": "+"<div id='divVal"+i+side+"''>"+values[i]+"</div>");
+        $("#"+side+"Border").append(newDiv);
+        $("#divVal"+i+side).css({float:"right"});
+        newDiv.css({
+            margin:"auto",
+            borderStyle:"groove",
+            borderRadius:"16px",
+            border:"1px solid black",
+            width:"150px",
+            textAlign:"right",
+            paddingRight:"5px",
+            backgroundColor:"lightgrey",
+            color:"black"
+        })
+    }
+}
+basicDisplay(values,sensors,"left");
+update_values();
+var intervalID = setInterval(function(){update_values()},10000);
+function update_values(){
+    $.getJSON('/update/controls',
+    function(dataNew) {
+         $('#Sensors').text(dataNew.sen);
+         $('#Values').text(dataNew.val);
+         console.log(dataNew);
+         sensors=dataNew.Sensors;
+         values=dataNew.Values;
+         
+         });
+       }
+
+
+
+
+</script>
+
+
+
+{% endblock %}
