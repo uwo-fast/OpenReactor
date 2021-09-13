@@ -1,10 +1,16 @@
 $fn=32;
 
 include <libs/BOSL/constants.scad>
+include <libs/threads-scad/threads.scad>
 use <libs/BOSL/shapes.scad>
 use <libs/BOSL/transforms.scad>
 use <libs/threads-scad/threads.scad>
 include <nipple.scad>
+
+T=22.090;
+Pitch=3.414;
+Height=1.845;
+Dia=19.960;
 
 bigTubeInDia = 2.5;
 bigTubeOutDia = 4.5;
@@ -31,6 +37,17 @@ smidge=0.5;
 
 
 
+// All units in mm
+releaseCylinderHeight=5;
+releaseCylinderID=1.75;
+releaseCylinderOD=3;
+releaseCylinderConeHeight=8;
+releaseBulbID=6;
+releaseBulbOD=8;
+releaseSmidge=0.5;
+
+
+
 module holderCylinder() {
   module bulb() {
     translate([0, 0, holderCylinderHeight+bulbID/2-smidge]) difference() {
@@ -48,6 +65,35 @@ module holderCylinder() {
     }
     cylinder(h=holderCylinderHeight, d=holderCylinderID, center=false);  
   }
+}
+
+
+
+module release() {
+  module bulb() {
+    translate([0, 0, releaseCylinderHeight+releaseBulbID/2-releaseSmidge]) difference() {
+      sphere(d=releaseBulbOD);
+      sphere(d=releaseBulbID);
+      translate([0, 0, releaseBulbOD/4]) cube([releaseBulbOD, releaseBulbOD, releaseBulbOD/2], center=true);
+    }
+  }
+  translate([0,0,releaseCylinderHeight+releaseBulbID/2]){nipple();}
+  translate([0,0,releaseCylinderHeight+releaseBulbID/2]){
+    rotate(180,[0,1,0]){
+      difference() {  
+        union() {
+          //cylinder(h=holderCylinderConeHeight, d2=holderCylinderOD, d1=holderCylinderOD+2, center=false);
+          bulb();
+          cylinder(h=releaseCylinderHeight, d=releaseCylinderOD, center=false);
+        }
+        cylinder(h=releaseCylinderHeight, d=releaseCylinderID, center=false);  
+      }}}
+        translate([0,0,(releaseCylinderID+1.5)/2]){
+                sphere(d=releaseCylinderID+1);
+        }
+        translate([0,0,0]){cube([1/10*releaseBulbOD,releaseBulbID,.5],center=true);}
+        translate([0,0,0]){cube([releaseBulbID,1/10*releaseBulbOD,.5],center=true);}
+        down(1-0.75)tube(h=1.25,od=releaseBulbOD,id=releaseBulbID);
 }
 
 
@@ -89,8 +135,9 @@ module nippleOut() {
 
 module lid() {
 
+    threadOD=22.090;
     lidOD=25;
-    lidID=22;
+    lidID=19.960;
     lidH=12;
     lidTopThickness=2;
     lidSideThickness=(lidOD-lidID)/2;
@@ -116,15 +163,16 @@ module lid() {
     // Above lid
     up(lidTopThickness/2) union() {
         arc_of(d=diaIO, n=4, ea=180) nipple();
-        cyl(h=nippleTotalH, d=4, align=V_UP);
+        //cyl(h=nippleTotalH, d=4, align=V_UP);
         tube(h=nippleTotalH, od=lidOD*0.78, id=lidOD*0.68);
+        nipple();
         linear_extrude(lidTopThickness/2) union() {
         move(x=(diaIO/4), y=(diaIO*0.95)) text(size=3, halign="center", valign="center", "+");
         move(x=-(diaIO/4), y=(diaIO*0.95)) text(size=3, halign="center", valign="center", "-");
         move(x=(diaIO*1.125)) text(size=3, halign="center", valign="center", "I");
         move(x=-(diaIO*1.125)) text(size=3, halign="center", valign="center", "O");
-        move(x=(diaIO/4), y=-(diaIO)) text(size=2.5, halign="center", valign="center", "B");
-        move(x=-(diaIO/4), y=-(diaIO)) text(size=2.5, halign="center", valign="center", "P");
+        move(x=(diaIO/4), y=-(diaIO)) text(size=2.5, halign="center", valign="center", "P");
+        move(x=-(diaIO/4), y=-(diaIO)) text(size=2.5, halign="center", valign="center", "B");
         }
     }
 
@@ -137,19 +185,29 @@ module lid() {
         }
             arc_of(d=diaIO, n=6, ea=360) cyl(h=lidTopThickness, d=nippleInDia);
             zrot(30) fwd(diaIO/2) cyl(h=bubblerHoleH, d1=bubblerHoleD1, d2=bubblerHoleD2);
+            // zrot(-30) fwd(diaIO/2) cyl(h=bubblerHoleH, d1=4.5, d2=4.5);
             zrot(-30) fwd(diaIO/2) cyl(h=bubblerHoleH, d1=4.5, d2=6);
+            cyl(h=lidTopThickness,d=nippleInDia);
     }
 
     // Below lid
+
     down(lidTopThickness/2) union() {
+        nippleIn();
         tube(h=ringH, od=ringOD, id=ringID, align=V_DOWN);
         arc_of(d=diaIO, n=3, ea=120) nippleIn();
         left(diaIO/2) nippleOut();
+        difference(){
         tube(h=lidH-lidTopThickness, od=lidOD, id=lidID, align=V_DOWN);
+        down(lidH){
+            AugerThread(threadOD,lidID,lidH-lidTopThickness,Pitch,tooth_angle=55,tolerance=0.2);
+    }}
     }
+
 }
 
 //nippleOut();
 //nippleIn();
 lid();
 //holderCylinder();
+//release();
