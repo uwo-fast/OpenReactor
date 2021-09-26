@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Quit script if there are any errors
+set -e
+
 # Update all submodules
 git submodule update --init --recursive
 

@@ -1,5 +1,5 @@
 import busio
-import model
+from . import model
 import time
 import datetime
 from board import SCL, SDA

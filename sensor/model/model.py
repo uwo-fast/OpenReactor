@@ -9,7 +9,7 @@
 from peewee import *
 
 
-db = SqliteDatabase('../openreactor.db', check_same_thread=False)
+db = SqliteDatabase('../../openreactor.db', check_same_thread=False)
 
 
 # Define data model classes that inherit from the Peewee ORM Model class.
