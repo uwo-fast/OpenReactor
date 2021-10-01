@@ -109,6 +109,8 @@ def updateControls():
             sensors.append(dev.name)
             print(dev.name)
             values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc())[0].value)
+            for i, v in enumerate(values):
+                values[i]=round(values[i],3)
         for con in Control.select():
             controls.append(con.name)
             values.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
