@@ -7,7 +7,7 @@ flask run
 import json
 import flask
 from flask import Flask, render_template, request
-from sensor.model import Sensor,SensorReading,Control,SensorData
+from sensor.model.model import Sensor,SensorReading,Control,SensorData
 app = Flask(__name__)
 toDisplay=[]
 devices=[]

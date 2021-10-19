@@ -1,7 +1,8 @@
 import busio
-from . import model
+from .model import model
 import time
 import datetime
+import random
 from board import SCL, SDA
 
 
@@ -43,7 +44,7 @@ class I2C:
         i2c.deinit()
 
     def readFalse(self):
-        self.value=10.0
+        self.value=random.uniform(4.5,9.5)	
         self.time = datetime.datetime.now()
     
     """Stores the value of the latest sensor reading into the database."""

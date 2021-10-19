@@ -14,8 +14,9 @@ sensors = {{Sensors | safe}}
 values = {{Values | safe}}
 controls = {{Controls | safe}}
 targets = {{Targets | safe}}
-function basicDisplay(indexing,object,side){
 
+
+function basicDisplay(indexing,object,side){
     for(let i = 0;i<indexing.length;i++){
         var newDiv = $("<div id='Div"+object[i]+"'></div>");
         newDiv.append(" "+object[i]+": "+"<div id='divVal"+i+side+"''>"+values[i]+"</div>");
@@ -26,7 +27,7 @@ function basicDisplay(indexing,object,side){
             borderStyle:"groove",
             borderRadius:"16px",
             border:"1px solid black",
-            width:"150px",
+            width:"200px",
             textAlign:"right",
             paddingRight:"5px",
             backgroundColor:"lightgrey",
@@ -45,7 +46,7 @@ function update_values(){
          console.log(dataNew);
          sensors=dataNew.Sensors;
          values=dataNew.Values;
-         
+         basicDisplay(values,sensors,"left");
          });
        }
 

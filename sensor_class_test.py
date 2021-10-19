@@ -1,5 +1,5 @@
-import sensor
-from model import Sensor,SensorReading
+from sensor import sensor
+from sensor.model.model import Sensor,SensorReading
 
 do = sensor.I2C(name="Dissolved Oxygen", units="% Oxygen", address=100, delay=0.6)
 ph = sensor.I2C(name="pH", units="pH")
