@@ -38,12 +38,12 @@ smidge=0.5;
 
 
 // All units in mm
-releaseCylinderHeight=5;
+releaseCylinderHeight=3;
 releaseCylinderID=1.75;
 releaseCylinderOD=3;
 releaseCylinderConeHeight=8;
-releaseBulbID=6;
-releaseBulbOD=8;
+releaseBulbID=8;
+releaseBulbOD=releaseBulbID+2;
 releaseSmidge=0.5;
 
 
@@ -88,13 +88,37 @@ module release() {
         }
         cylinder(h=releaseCylinderHeight, d=releaseCylinderID, center=false);  
       }}}
-        translate([0,0,(releaseCylinderID+1.5)/2]){
-                sphere(d=releaseCylinderID+1);
+        translate([0,-10,(releaseCylinderID)/2-8]){
+                sphere(d=releaseBulbID-0.2);
+                down((releaseBulbID)/2) cube([5,5,0.5],center=true);
         }
-        translate([0,0,0]){cube([1/10*releaseBulbOD,releaseBulbID,.5],center=true);}
-        translate([0,0,0]){cube([releaseBulbID,1/10*releaseBulbOD,.5],center=true);}
-        down(1-0.75)tube(h=1.25,od=releaseBulbOD,id=releaseBulbID);
-}
+        //translate([0,0,-2]){cube([1/10*releaseBulbOD,releaseBulbID,.5],center=true);}
+        //translate([0,0,-2]){cube([releaseBulbID,1/10*releaseBulbOD,.5],center=true);}
+        //down(3-0.75)tube(h=3.25,od=releaseBulbOD,id=releaseBulbID);
+        /*difference(){
+        down(3-0.75)ScrewThread(releaseBulbOD, 3.25, pitch=0, tooth_angle=60, tolerance=0.1, tip_height=0, tooth_height=0, tip_min_fract=0);
+        down(3-0.75)cyl(h=10,d=releaseBulbID);
+        }*/
+        difference(){
+        down(11.5)tube(h=12,od=releaseBulbOD,id=releaseBulbID);
+        down(1.5)rotate(90,[0,1,0]){cyl(h=releaseBulbOD,d=1);}
+        down(1.5)rotate(90,[1,0,0]){cyl(h=releaseBulbOD,d=1);}
+            
+        }
+        /*
+ rotate(180,[0,1,0]){       
+        translate([0,15,.75]){
+            difference(){
+                
+                cyl(h=3.35,d=releaseBulbOD+1);
+                mirror([0,1,0]){down(3-1.25)ScrewThread(releaseBulbOD+0.1, 3.25, pitch=0, tooth_angle=60, tolerance=0.1, tip_height=0, tooth_height=0, tip_min_fract=0);}
+                cyl(h=4,d=releaseBulbID);
+        }
+        up(3.175/2)cube([1/10*releaseBulbOD,releaseBulbID,.175],center=true);
+        up(3.175/2)cube([releaseBulbID,1/10*releaseBulbOD,.175],center=true);
+        }
+        }*/
+    }
 
 
 // Threads have 2mm thickness
@@ -208,6 +232,6 @@ module lid() {
 
 //nippleOut();
 //nippleIn();
-lid();
+//lid();
 //holderCylinder();
-//release();
+release();
