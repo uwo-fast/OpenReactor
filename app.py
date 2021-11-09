@@ -90,13 +90,14 @@ def controls():
     values = []
     controls =[]
     targets = []
+    print(Control.select()[0].name)
     for dev in Sensor.select():
         sensors.append(dev.name)
         print(dev.name)
         values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc())[0].value)
     for con in Control.select():
          controls.append(con.name)
-         values.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
+         targets.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
     return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Targets=targets)
 @app.route("/update/controls",methods=['GET','POST'])
 def updateControls():

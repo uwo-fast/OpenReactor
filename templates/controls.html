@@ -14,12 +14,13 @@ sensors = {{Sensors | safe}}
 values = {{Values | safe}}
 controls = {{Controls | safe}}
 targets = {{Targets | safe}}
-
+console.log(controls)
+console.log(targets)
 
 function basicDisplay(indexing,object,side){
     for(let i = 0;i<indexing.length;i++){
         var newDiv = $("<div id='Div"+object[i]+"'></div>");
-        newDiv.append(" "+object[i]+": "+"<div id='divVal"+i+side+"''>"+values[i]+"</div>");
+        newDiv.append(" "+object[i]+": "+"<div id='divVal"+i+side+"'>"+values[i]+"</div>");
         $("#"+side+"Border").append(newDiv);
         $("#divVal"+i+side).css({float:"right"});
         newDiv.css({
@@ -36,17 +37,19 @@ function basicDisplay(indexing,object,side){
     }
 }
 basicDisplay(values,sensors,"left");
+basicDisplay(targets,controls,"right");
 update_values();
 var intervalID = setInterval(function(){update_values()},10000);
 function update_values(){
     $.getJSON('/update/controls',
     function(dataNew) {
-         $('#Sensors').text(dataNew.sen);
-         $('#Values').text(dataNew.val);
-         console.log(dataNew);
-         sensors=dataNew.Sensors;
-         values=dataNew.Values;
-         basicDisplay(values,sensors,"left");
+	 for(let i=0;i<dataNew.sen.length;i++){
+	 str='divVal'+i+'left';
+	 document.getElementById(str).innerHTML=dataNew.val[i];
+	 }
+         sensors=dataNew.sen;
+         values=dataNew.val;
+         //basicDisplay(values,sensors,"left");
          });
        }
 
