@@ -14,23 +14,35 @@ sensors = {{Sensors | safe}}
 values = {{Values | safe}}
 controls = {{Controls | safe}}
 targets = {{Targets | safe}}
+conVal={{ControlsValues | safe}}
 console.log(controls)
 console.log(targets)
 
 function basicDisplay(indexing,object,side){
     for(let i = 0;i<indexing.length;i++){
-        var newDiv = $("<div id='Div"+object[i]+"'></div>");
-        newDiv.append(" "+object[i]+": "+"<div id='divVal"+i+side+"'>"+values[i]+"</div>");
+        var newDiv = $("<br><div id='Div"+object[i]+"'></div>");
+        if(side=="left"){
+            id = ""+i+side;
+            console.log(id);
+            newDiv.append("  "+object[i]+"<br>"+"<div id='"+id+"'>"+values[i]+"</div>");
+        }
+        if(side=="right"){
+            newDiv.append(" "+object[i]+"<br>Target:<br>"+"<div id='divVal"+i+side+"target'>"+targets[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"</div>")
+        }
+        console.log(newDiv)
         $("#"+side+"Border").append(newDiv);
-        $("#divVal"+i+side).css({float:"right"});
+        $("#divVal"+i+side).css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
+        $("#divVal"+i+side+"target").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
+        $("#divVal"+i+side+"actual").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
         newDiv.css({
             margin:"auto",
             borderStyle:"groove",
-            borderRadius:"16px",
+            //borderRadius:"16px",
             border:"1px solid black",
             width:"200px",
-            textAlign:"right",
+            textAlign:"center",
             paddingRight:"5px",
+            paddingLeft:"5px",
             backgroundColor:"lightgrey",
             color:"black"
         })
@@ -44,9 +56,10 @@ function update_values(){
     $.getJSON('/update/controls',
     function(dataNew) {
 	 for(let i=0;i<dataNew.sen.length;i++){
-	 str='divVal'+i+'left';
-	 document.getElementById(str).innerHTML=dataNew.val[i];
-	 }
+	 str=''+i+'left';
+	 //document.getElementById(str).innerHTML=dataNew.val[i];
+	document.getElementById('Div'+dataNew.sen[i]).children[1].innerHTML=dataNew.val[i] 
+    }
          sensors=dataNew.sen;
          values=dataNew.val;
          //basicDisplay(values,sensors,"left");

@@ -116,6 +116,7 @@ def controls():
     values = []
     controls =[]
     targets = []
+    controls_values=[]
     print(Control.select()[0].name)
     for dev in Sensor.select():
         sensors.append(dev.name)
@@ -131,7 +132,9 @@ def controls():
          length=len(Control.select().where(Control.name==con.name).order_by(Control.name.desc()))
          val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
          targets.append(val)
-    return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Targets=targets)
+         val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
+         controls_values.append(val)
+    return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Targets=targets,ControlsValues=controls_values)
 @app.route("/update/controls",methods=['GET','POST'])
 def updateControls():
     if request.method== 'GET':
@@ -139,6 +142,7 @@ def updateControls():
         values = []
         controls = []
         targets = []
+        controls_values = []
         for dev in Sensor.select():
             sensors.append(dev.name)
             print(dev.name)
@@ -148,6 +152,8 @@ def updateControls():
         for con in Control.select():
             controls.append(con.name)
             length=len(Control.select().where(Control.name==con.name).order_by(Control.name.desc()))
+            val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].target
+            targets.append(val)
             val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
-            values.append(val)
-        return json.dumps({'sen':sensors,'val':values,'con':controls,'tar':targets})
+            controls_values.append(val)
+        return json.dumps({'sen':sensors,'val':values,'con':controls,'tar':targets,'con_val':controls_values})
