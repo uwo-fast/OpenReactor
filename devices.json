@@ -1,6 +1,23 @@
-{ "I2CDEVICES":["pH","Dissolved Oxygen"]
-   "ADDRESSES":{
-      "pH":99,
-      "Dissolved Oxygen":100
-      }
+
+{
+"DEVICES":[
+   {
+      "name":"pH",
+      "address":99,
+      "unit":"pH",
+      "form":"Atlas"
+   },
+   {
+      "name":"Dissolved Oxygen",
+      "address":100,
+      "unit":"% Oxygen",
+      "form":"Atlas"
+   },
+   {
+      "name":"Adafruit Temperature Sensor",
+      "address":25,
+      "unit":"Degrees Celcius",
+      "form":"temp_ada"
+   }
+]
 }

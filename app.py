@@ -6,9 +6,32 @@ flask run
 """
 import json
 import flask
+import time
 from flask import Flask, render_template, request
+from sensor import sensor
 from sensor.model.model import Sensor,SensorReading,Control,SensorData
+from sensor.device_detect import connected as ct
 app = Flask(__name__)
+
+def innit_connected():
+    connected=ct()
+    for sen in connected.devs:
+        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0])
+        print('sen:{}'.format(sen))
+        print(dev.value)
+        if not SensorReading.select().where(SensorReading.name==dev.name):
+            print("Missing : {}".format(dev.name))
+            dev.readEmpty()
+            dev.store()
+
+            
+
+def innit_control():
+    #print(Control.select())
+    SensorData().define_control(name="System Toggle", target=-1,value=0)
+
+innit_connected()
+innit_control()
 toDisplay=[]
 devices=[]
 for dev in Sensor.select():
@@ -20,6 +43,7 @@ Data=SensorData()
 def index():
     return render_template("index.html")
 
+#graph update methods
 @app.route("/update/graphs/<graphID>",methods=['GET','POST'])
 
 def update(graphID):
@@ -68,9 +92,11 @@ def graphsUpdate(toDisplay):
         for Data in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
             dataData.append(Data.value)
         values1 = dataData
-        time1=[]
+        #time1=[]
         time1=dataTime
-        first=time1[0]
+        first=time.time()
+        if len(time1)!=0:
+            first=time1[0]
         for i in range(len(time1)):
             time1[i]=(time1[i]-first)/3600
         toParse=[]
@@ -83,7 +109,7 @@ def graphsUpdate(toDisplay):
 def about():
     return render_template("about.html")
 
-# About page for project
+# Page for controls
 @app.route("/controls")
 def controls():
     sensors = []
@@ -93,11 +119,18 @@ def controls():
     print(Control.select()[0].name)
     for dev in Sensor.select():
         sensors.append(dev.name)
-        print(dev.name)
-        values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc())[0].value)
+        print("Name:{}".format(dev.name))
+        #for i in SensorReading.select().where(SensorReading.name==dev.name):
+        #    print("Reading:{}".format(i.value))
+        length=len(SensorReading.select().where(SensorReading.name==dev.name))
+        val=SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time)[length-1].value
+        print(val)
+        values.append(val)
     for con in Control.select():
          controls.append(con.name)
-         targets.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
+         length=len(Control.select().where(Control.name==con.name).order_by(Control.name.desc()))
+         val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
+         targets.append(val)
     return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Targets=targets)
 @app.route("/update/controls",methods=['GET','POST'])
 def updateControls():
@@ -114,5 +147,7 @@ def updateControls():
                 values[i]=round(values[i],3)
         for con in Control.select():
             controls.append(con.name)
-            values.append(Control.select().where(Control.name==con.name).order_by(Control.name.desc()).value)
+            length=len(Control.select().where(Control.name==con.name).order_by(Control.name.desc()))
+            val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
+            values.append(val)
         return json.dumps({'sen':sensors,'val':values,'con':controls,'tar':targets})

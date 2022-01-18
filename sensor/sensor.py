@@ -47,6 +47,10 @@ class I2C:
         self.value=random.uniform(4.5,9.5)	
         self.time = datetime.datetime.now()
     
+    def readEmpty(self):
+        self.value=-1
+        self.time = datetime.datetime.now()
+
     """Stores the value of the latest sensor reading into the database."""
     def store(self):
         self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)

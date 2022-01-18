@@ -37,6 +37,7 @@ class SensorReading(Model):
 class Control(Model):
     name = CharField()
     target = FloatField()
+    value = FloatField()
 
     class Meta:
         database = db
@@ -64,9 +65,9 @@ class SensorData(object):
         # Very handy!
         Sensor.get_or_create(name=name, units=units)
 
-    def define_control(self,name,target):
+    def define_control(self,name,target,value):
 
-        Control.get_or_create(name=name,target=target)
+        Control.get_or_create(name=name,target=target,value=value)
 
     def get_control(self):
         return Control.select()

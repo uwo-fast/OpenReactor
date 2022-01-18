@@ -45,5 +45,5 @@ control2Target= 0
 # these exact names and units, then a new entry will be created in the table.
 Data.define_control(name = control1Name,target = control1Target)
 Data.define_control(name  = control2Name,target = control2Target)
-print(model.Control.select().where(model.Control.name==control2Name)[0])
+print(model.Control.select())
 
