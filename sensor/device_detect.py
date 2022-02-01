@@ -34,10 +34,13 @@ class connected:
         i2c.deinit()
         for dev in devices:
             addrs=dev
-            name=self.find_dev(dev,"name")
+            name=self.find_dev(dev,'name')
             form=self.find_dev(dev,'form')
             unit=self.find_dev(dev,'unit')
-            self.devs.append((addrs,name,unit,form))
+            req_msg=self.find_dev(dev,'req_msg')
+            delay=self.find_dev(dev,'delay')
+            read_length=self.find_dev(dev,'read_length')
+            self.devs.append((addrs,name,unit,form,req_msg,delay,read_length))
     def find_dev(self,addr,search):
         file=open(dir+'/devices.json')
         dict=json.load(file)

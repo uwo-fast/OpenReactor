@@ -5,19 +5,30 @@
       "name":"pH",
       "address":99,
       "unit":"pH",
-      "form":"Atlas"
+      "form":"Atlas",
+      "req_msg":82,
+      "delay":0.9,
+      "read_length":31
+      
+
    },
    {
       "name":"Dissolved Oxygen",
       "address":100,
       "unit":"% Oxygen",
-      "form":"Atlas"
+      "form":"Atlas",
+      "req_msg":82,
+      "delay":0.9,
+      "read_length":31
    },
    {
       "name":"Adafruit Temperature Sensor",
       "address":25,
       "unit":"Degrees Celcius",
-      "form":"temp_ada"
+      "form":"temp_ada",
+      "req_msg":5,
+      "delay":0.0,
+      "read_length":2
    }
 ]
 }

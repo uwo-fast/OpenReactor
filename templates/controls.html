@@ -18,23 +18,7 @@ conVal={{ControlsValues | safe}}
 console.log(controls)
 console.log(targets)
 
-function basicDisplay(indexing,object,side){
-    for(let i = 0;i<indexing.length;i++){
-        var newDiv = $("<br><div id='Div"+object[i]+"'></div>");
-        if(side=="left"){
-            id = ""+i+side;
-            console.log(id);
-            newDiv.append("  "+object[i]+"<br>"+"<div id='"+id+"'>"+values[i]+"</div>");
-        }
-        if(side=="right"){
-            newDiv.append(" "+object[i]+"<br>Target:<br>"+"<div id='divVal"+i+side+"target'>"+targets[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"</div>")
-        }
-        console.log(newDiv)
-        $("#"+side+"Border").append(newDiv);
-        $("#divVal"+i+side).css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
-        $("#divVal"+i+side+"target").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
-        $("#divVal"+i+side+"actual").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
-        newDiv.css({
+var textBox = {
             margin:"auto",
             borderStyle:"groove",
             //borderRadius:"16px",
@@ -45,7 +29,96 @@ function basicDisplay(indexing,object,side){
             paddingLeft:"5px",
             backgroundColor:"lightgrey",
             color:"black"
-        })
+        };
+
+var side = ["left","right"];
+
+function basicDisplay(indexing,object,side){
+    for(let i = 0;i<indexing.length;i++){
+        var newDiv = document.createElement('div');
+        newDiv.innerHTML = "<br>";
+        newDiv.id="Div"+object[i]
+        document.getElementById("cont").appendChild(newDiv);
+        if(side=="left"){
+            var newName = document.createElement('div');
+            var newData = document.createElement('div');
+            var newBut = document.createElement('button');
+            newName.innerHTML=""+object[i]+"<br>";
+            newName.id="DivChild"+i+side;
+            newName.appendChild(newData);
+            newName.appendChild(newBut);
+            newData.innerHTML=values[i]
+            newData.id=""+i+side;
+            const locale = document.getElementById("Div"+object[i]);
+            locale.appendChild(newName);
+            
+            newBut.className="btn btn-primary btn-sm";
+            newBut.innerHTML="Measure"
+            newBut.id="button"+i+side;
+            newBut.onclick=function(){
+                console.log("Button Pressed");
+                toSend=JSON.stringify(object[i]);
+                console.log(toSend);
+                $.ajax({
+                    url:'/controls/measure/'+'sensor',
+                    type:'post',
+                    contentType:'application/json',
+                    dataType:'json',
+                    data:toSend,
+                    success:function(){console.log("Success");update_values();}
+                })
+            }
+        }
+        if(side=="right"){
+            var newName= document.createElement('div');
+            var newData=document.createElement('div');
+            var newTarget = document.createElement('div');
+            var newBut = document.createElement('button');
+            var newInput = document.createElement('input');
+            newName.innerHTML=""+object[i]+"<br>Actual:<br>";
+            newName.id = "DivChild"+i+side;
+            newData.id = ""+i+side;
+            newName.appendChild(newData);
+            newName.appendChild(newTarget);
+            newName.appendChild(newBut);
+            newData.innerHTML = conVal[i];
+            newTarget.innerHTML = "Target:<br>";
+            newInput.type="number";
+            newInput.id=""+i+"input";
+            newInput.value=targets[i];
+            newInput.style = "width:50%;text-align:center";
+            newTarget.appendChild(newInput);
+            const locale = document.getElementById("Div"+object[i]);
+            locale.appendChild(newName);
+            newBut.className="btn btn-primary btn-sm";
+            newBut.innerHTML="Set Target"
+            newBut.id="button"+i+side;
+            newBut.onclick=function(){
+                console.log("Button Pressed");
+                controlIn = document.getElementById(""+i+"input").value;
+                console.log("Set target to "+controlIn);
+                toSend=[object[i],controlIn];
+                toSend=JSON.stringify(toSend);
+                console.log(toSend);
+                $.ajax({
+                    url:'/controls/measure/'+'control',
+                    type:'post',
+                    contentType:'application/json',
+                    dataType:'json',
+                    data:toSend,
+                    success:function(){console.log("Success");}
+                })
+            }
+
+            //newDiv.innerHTML="Target:<br>"+"<div id='divVal"+i+side+"target'>"+targets[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"";
+            //newDiv.append(" "+object[i]+"<br>Target:<br>"+"<div id='divVal"+i+side+"target'>"+targets[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"</div>")
+        }
+        console.log(newDiv)
+        $("#"+side+"Border").append(newDiv);
+        $("#"+i+side).css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
+        //$("#"+i+side+"target").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
+        //$("#"+i+side+"actual").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
+        $("#DivChild"+i+side).css(textBox)
     }
 }
 basicDisplay(values,sensors,"left");
@@ -56,9 +129,14 @@ function update_values(){
     $.getJSON('/update/controls',
     function(dataNew) {
 	 for(let i=0;i<dataNew.sen.length;i++){
-	 str=''+i+'left';
-	 //document.getElementById(str).innerHTML=dataNew.val[i];
-	document.getElementById('Div'+dataNew.sen[i]).children[1].innerHTML=dataNew.val[i] 
+	 const str=''+i+'left';
+	 document.getElementById(str).innerHTML=dataNew.val[i];
+    }
+    for(let i=0;i<dataNew.con.length;i++){
+        const str=''+i+'right';
+        //const strTar=''+i+'input';
+        document.getElementById(str).innerHTML=dataNew.con_val
+        
     }
          sensors=dataNew.sen;
          values=dataNew.val;
@@ -70,7 +148,4 @@ function update_values(){
 
 
 </script>
-
-
-
 {% endblock %}

@@ -13,24 +13,25 @@ from sensor.model.model import Sensor,SensorReading,Control,SensorData
 from sensor.device_detect import connected as ct
 app = Flask(__name__)
 
-def innit_connected():
+def innit_connected(I2C_dev):
     connected=ct()
     for sen in connected.devs:
-        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0])
-        print('sen:{}'.format(sen))
-        print(dev.value)
+        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0],form=sen[3],request_message=sen[4],delay=sen[5],read_length=sen[6])
+        I2C_dev.append(dev)
+        #print('sen:{}'.format(sen))
+        #print(dev.value)
         if not SensorReading.select().where(SensorReading.name==dev.name):
             print("Missing : {}".format(dev.name))
             dev.readEmpty()
             dev.store()
 
-            
-
 def innit_control():
     #print(Control.select())
     SensorData().define_control(name="System Toggle", target=-1,value=0)
 
-innit_connected()
+I2C_dev=[]
+innit_connected(I2C_dev)
+print(I2C_dev)
 innit_control()
 toDisplay=[]
 devices=[]
@@ -130,10 +131,10 @@ def controls():
     for con in Control.select():
          controls.append(con.name)
          length=len(Control.select().where(Control.name==con.name).order_by(Control.name.desc()))
-         val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
-         targets.append(val)
-         val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
-         controls_values.append(val)
+         valTar=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].target
+         targets.append(valTar)
+         valCon=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
+         controls_values.append(valCon)
     return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Targets=targets,ControlsValues=controls_values)
 @app.route("/update/controls",methods=['GET','POST'])
 def updateControls():
@@ -157,3 +158,21 @@ def updateControls():
             val=Control.select().where(Control.name==con.name).order_by(Control.name.desc())[length-1].value
             controls_values.append(val)
         return json.dumps({'sen':sensors,'val':values,'con':controls,'tar':targets,'con_val':controls_values})
+
+@app.route("/controls/measure/<side>",methods=['GET','POST'])
+def measure(side):
+    if request.method=='POST':
+        if side == "sensor":
+            sensor_measure=request.json
+            print(sensor_measure)
+            for dev in I2C_dev:
+                if dev.name==sensor_measure:
+                    dev.read()
+                    dev.store()
+                    dev.print_info()
+        elif side == "control":
+            print("Control Return:{}".format(request.json))
+            control_return=request.json
+            q = Control.update({Control.target:control_return[1]}).where(Control.name==control_return[0])
+            q.execute()
+    return flask.jsonify(side)

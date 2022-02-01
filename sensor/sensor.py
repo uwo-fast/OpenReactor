@@ -1,14 +1,30 @@
 import busio
 from .model import model
+from .model.model import Sensor,SensorReading
 import time
 import datetime
 import random
 from board import SCL, SDA
 
+def form(form,data):
+    result=-1
+    form=form.casefold()
+    print("form:{}".format(form))
+    if form=="temp_ada":
+        val=data[0] << 8 | data[1]
+        result=(val & 0xFFF)/16.0
+        if val & 0x1000:
+            result -=256.0
+    elif form=="atlas":
+        result=list(map(lambda x: chr(x & ~0x80),list(data)))
+        result=result[1:6]
+        result="".join(map(str,result))
+
+    return result
 
 class I2C:
     """Used to store all the required information to date from a sensor and store that data to a database."""
-    def __init__(self, name, units, address=99, request_message=0x52, delay=0.9, read_length=31, response_most_significant_bit_trim=1, response_least_significant_bit_trim=6):
+    def __init__(self, name, units,form="atlas", address=99, request_message=0x52, delay=0.9, read_length=31, response_most_significant_bit_trim=1, response_least_significant_bit_trim=6):
         self.name = name
         self.units = units
         self.addr = address
@@ -19,7 +35,7 @@ class I2C:
         self.lsb_trim = response_least_significant_bit_trim
         self.value = 0.000
         self.time = datetime.datetime.now()
-
+        self.form = form
         self.db = model.SensorData()
         self.db.define_sensor(name, units)
 
@@ -36,9 +52,10 @@ class I2C:
         result=bytearray(self.read_len)
         time.sleep(self.delay)
         i2c.readfrom_into(self.addr,result)
-        result=list(map(lambda x: chr(x & ~0x80), list(result)))
-        result=result[self.msb_trim:self.lsb_trim]
-        result="".join(map(str,result))
+        result = form(self.form,result)
+        #result=list(map(lambda x: chr(x & ~0x80), list(result)))
+        #result=result[self.msb_trim:self.lsb_trim]
+        #result="".join(map(str,result))
         self.value = result
         self.time = datetime.datetime.now()
         i2c.deinit()

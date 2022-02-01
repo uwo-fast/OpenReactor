@@ -11,7 +11,7 @@ def form(form,data):
     return result
 
 i2c=busio.I2C(SCL,SDA,400000)
-i2c.writeto(25, bytes([0x05]),stop=False)
+i2c.writeto(25, bytes([5]),stop=False)
 result=bytearray(2)
 i2c.readfrom_into(25, result)
 result=form("temp_ada",result)
