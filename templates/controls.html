@@ -1,8 +1,38 @@
 {% extends 'layout.html' %}
 {% block body %}
-<div id="leftBorder"> </div>
+<style>
+    .textBox{
+        margin:auto;
+        border-style:groove;
+        border:1px solid black;
+        width:200px;
+        text-align:center;
+        padding-right:5px;
+        padding-left:5px;
+        background-color:lightgrey;
+        color:black;
+    }
+    .linebreak{
+        width:100%
+    }
+    .experimentBox{
+        margin-bottom:5%;
+        border-style:groove;
+        border:1px solid black;
+        width:33%;
+        display: flex;
+        flex-direction:row;
+        flex-wrap:wrap;
+        float: left;
+        background-color: lightgrey;
+        color: black;
+    }
+</style>
+<div id ="experiment" style="margin-bottom: 15%"></div>
+<div id="leftBorder"></div>
 <div id="rightBorder"></div>
 <script>
+$("#leftBorder").css({width:"100%",display:"float",flexWrap:"wrap",float:"center"});
 $("#leftBorder").css({width:"50%",display:"float",flexWrap:"wrap",float:"left"});
 $("#rightBorder").css({width:"50%",display:"float",flexWrap:"wrap",float:"right"});
 $("#leftBorder").append("<div id=titleL>Readings<div>");
@@ -17,19 +47,6 @@ targets = {{Targets | safe}}
 conVal={{ControlsValues | safe}}
 console.log(controls)
 console.log(targets)
-
-var textBox = {
-            margin:"auto",
-            borderStyle:"groove",
-            //borderRadius:"16px",
-            border:"1px solid black",
-            width:"200px",
-            textAlign:"center",
-            paddingRight:"5px",
-            paddingLeft:"5px",
-            backgroundColor:"lightgrey",
-            color:"black"
-        };
 
 var side = ["left","right"];
 
@@ -118,9 +135,74 @@ function basicDisplay(indexing,object,side){
         $("#"+i+side).css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
         //$("#"+i+side+"target").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
         //$("#"+i+side+"actual").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
-        $("#DivChild"+i+side).css(textBox)
+        document.getElementById("DivChild"+i+side).classList.add('textBox');
     }
 }
+function experimentCycle(){
+
+    ex = document.getElementById("experiment");
+    var newLine = document.createElement('div');
+    newLine.classList.add('linebreak')
+
+
+    var nameDiv=document.createElement('div');
+    nameDiv.classList.add('experimentBox');
+    var timeDiv=document.createElement('div');
+    timeDiv.classList.add('experimentBox');
+    var buttonDiv=document.createElement('div');
+    buttonDiv.classList.add('experimentBox');
+
+    var name = document.createElement('input');
+    var fileName = document.createElement('div');
+    var setName = document.createElement('button');
+    setName.className="btn btn-primary";
+    var startTime = document.createElement('div');
+    var runTime = document.createElement('div');
+    var start = document.createElement('button')
+    start.className="btn btn-primary btn-sm";
+    start.innerHTML="Start"
+    var stop = document.createElement('button');
+    stop.className="btn btn-danger btn-sm";
+    stop.innerHTML="Stop"
+
+    name.id="experimentName";
+    fileName.id="fileName";
+    startTime.id="startTime";
+    runTime.id="runTime";
+    start.id="startButton";
+    stop.id="stopButton";
+
+    ex.append(nameDiv);
+    ex.append(timeDiv);
+    ex.append(buttonDiv);
+
+
+    nameDiv.innerHTML+="<p style='float:right;margin-right:0%;margin-left:auto'>Name: </p>";
+    nameDiv.appendChild(name);
+    name.append(newLine);
+    //nameDiv.appendChild(setName);
+    nameDiv.appendChild(newLine);
+    nameDiv.appendChild(fileName);
+    $('#experimentName').css({float:"right",textAlign:"center",backgroundColor:"white",marginLeft:"0%",marginRight:"0%",border:"1px solid black",width:"50%",height:"fit-content"});
+    $('#fileName').css({float:"right",textAlign:"center",marginLeft:"auto",marginRight:"0%",border:"1px solid black",width:"50%"});
+    fileName.innerHTML="testName";
+
+    timeDiv.innerHTML+="<p>Start Time: </p>";
+    timeDiv.appendChild(startTime);
+    timeDiv.appendChild(newLine);
+    timeDiv.innerHTML+="<p>Run Time: </p>";
+    timeDiv.appendChild(runTime);
+
+    buttonDiv.appendChild(start);
+    buttonDiv.appendChild(newLine);
+    buttonDiv.appendChild(stop);
+
+
+}
+
+
+
+experimentCycle();
 basicDisplay(values,sensors,"left");
 basicDisplay(targets,controls,"right");
 update_values();
