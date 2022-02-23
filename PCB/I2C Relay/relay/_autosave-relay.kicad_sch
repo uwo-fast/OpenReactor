@@ -2806,7 +2806,7 @@
   (symbol (lib_id "Graphic:Logo_Open_Hardware_Small") (at 273.05 175.26 0) (unit 1)
     (in_bom yes) (on_board yes)
     (uuid a64baf03-73ea-48cd-beed-cc1ebca7b0d6)
-    (property "Reference" "MOST_OD_SOURCE" (id 0) (at 257.81 175.26 0))
+    (property "Reference" "MOST_OD_SOURCE1" (id 0) (at 257.81 175.26 0))
     (property "Value" "Logo_Open_Hardware_Small" (id 1) (at 273.05 180.975 0)
       (effects (font (size 1.27 1.27)) hide)
     )
@@ -3267,7 +3267,7 @@
       (reference "LED1") (unit 1) (value "LZ7-04M2PD-0000") (footprint "LZ7:LZ7-04M2PD-0000")
     )
     (path "/a64baf03-73ea-48cd-beed-cc1ebca7b0d6"
-      (reference "MOST_OD_SOURCE") (unit 1) (value "Logo_Open_Hardware_Small") (footprint "Symbol:OSHW-Symbol_6.7x6mm_SilkScreen")
+      (reference "MOST_OD_SOURCE1") (unit 1) (value "Logo_Open_Hardware_Small") (footprint "Symbol:OSHW-Symbol_6.7x6mm_SilkScreen")
     )
     (path "/b60fcb79-2491-429f-a77b-bcef23829209"
       (reference "R1") (unit 1) (value "0.8") (footprint "Resistor_SMD:R_1206_3216Metric")
