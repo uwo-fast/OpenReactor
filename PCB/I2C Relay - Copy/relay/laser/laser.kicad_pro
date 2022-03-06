@@ -239,7 +239,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "multispectrum LED.kicad_pro",
+    "filename": "laser.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -316,6 +316,11 @@
     "subpart_first_id": 65,
     "subpart_id_separator": 0
   },
-  "sheets": [],
+  "sheets": [
+    [
+      "e96fa8e3-6179-40c6-97f4-7e2af0a7d8a8",
+      ""
+    ]
+  ],
   "text_variables": {}
 }
