@@ -7,11 +7,15 @@ flask run
 import json
 import flask
 import time
+import os
 from flask import Flask, render_template, request
 from sensor import sensor
 from sensor.model.model import Sensor,SensorReading,Control,SensorData
 from sensor.device_detect import connected as ct
+from experiments.experiments import experiment
 app = Flask(__name__)
+
+dir = os.path.dirname(os.path.realpath(__file__))
 
 def innit_connected(I2C_dev):
     connected=ct()
@@ -26,8 +30,8 @@ def innit_connected(I2C_dev):
             dev.store()
 
 def innit_control():
-    #print(Control.select())
-    SensorData().define_control(name="System Toggle", target=-1,value=0)
+    print(Control.select())
+    #SensorData().define_control(name="System Toggle", target=-1,value=0)
 
 I2C_dev=[]
 innit_connected(I2C_dev)
@@ -176,3 +180,23 @@ def measure(side):
             q = Control.update({Control.target:control_return[1]}).where(Control.name==control_return[0])
             q.execute()
     return flask.jsonify(side)
+
+@app.route("/update/experiments/<method>/<name>",methods=['GET','POST'])
+def updateExp(method,name):
+    exp=experiment('./experiments')
+    print(exp.list())
+    if request.method=='GET':
+        if method=="list":
+            path,ret=exp.list()
+        elif method=="info":
+            ret=exp.info(name)
+        return json.dumps({'ret':ret})
+    elif request.method=='POST':
+        if method=="new":
+            success=exp.new(name)
+        elif method=="start":
+            success=exp.start(name)
+        elif method=="end":
+            success=exp.end(name)
+        return flask.jsonify(success)
+    

@@ -1,10 +1,14 @@
 {% extends 'layout.html' %}
 {% block body %}
 <style>
+    li {
+        float:left;
+    }
     .textBox{
         margin:auto;
         border-style:groove;
         border:1px solid black;
+        border-radius:25px;
         width:200px;
         text-align:center;
         padding-right:5px;
@@ -19,7 +23,7 @@
         margin-bottom:5%;
         border-style:groove;
         border:1px solid black;
-        width:33%;
+        width:25%;
         display: flex;
         flex-direction:row;
         flex-wrap:wrap;
@@ -27,7 +31,244 @@
         background-color: lightgrey;
         color: black;
     }
+    .center{
+        display:flex;
+        justify-content:center;
+        align-items: center;
+    }
 </style>
+<div class="navbar navbar-dark bg-dark">
+    <div class="container-fluid">
+        <div>
+            <form>
+                <select class="textBox" id="selectExp">
+                    <optgroup label="--New Experiment--">
+                        <option id="newExp" value=0>Create New Experiment</option>
+                    </optgroup>
+                    <optgroup label="--Existing Experiments--" id="selectExpGroup">
+
+                    </optgroup>
+                </select>
+            </form>
+            <div id="contExpNew">
+                <form class="d-flex hidden" id="newExperiment">
+                    <label class="textBox" >Name:</label>
+                    <input class="form-control me-2" id="newExpName">
+                    <button type='button' class="btn btn-primary btm-sm" id="newExpBut">Set</button>  
+                </form>
+            </div>
+            <div id="contExpSel" style="display:none;">
+                <form class="'d-flex center" id="existingExperiment">
+                    <button type='button' class="btn btn-success btm-sm" id="startExp">Start</button>  
+                    <button type='button'  class="btn btn-danger btm-sm" id="stopExp">Stop</button>  
+                </form>
+                <p class="text-success">Time Start: <span id="timeStart"></span></p>
+                <p class="text-info">Elapsed Time: <span id="timeElapsed"></span></p>
+                <p class="text-danger">Time End: <span id="timeStop"></span</p>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script>
+    function update_Experiments(){
+        $.getJSON('/update/experiments/list/none',
+        function(data){
+            Exp=[]
+            $("#selectExpGroup").empty();
+            for(let i=0;i<data.ret.length;i++){
+                Exp.push(data.ret[i])
+            }
+            listExp=Exp
+            selectExperiment=document.getElementById("selectExp")
+            group=document.getElementById("selectExpGroup");
+            for (var i = 0; i<listExp.length;i++){
+                var newOption = document.createElement('option');
+                newOption.innerHTML=listExp[i];
+                group.appendChild(newOption)
+            }
+            selectExperiment.selectedIndex=0;
+        });
+        
+    }
+
+    function formatDate(time){
+        time=time*1000 //python returns time as seconds, js uses time in milliseconds so must be converted
+        t = new Date(time)
+        return t.toLocaleString('en-US',{hour12:false})
+    }
+
+    function getElapsedTime(startTime,timeCurrent){
+        function toTwo(st){
+            return ('00'+st).slice(String(st).length)
+        }
+        //timeCurrent = new Date().getTime()
+        e=(timeCurrent)-(startTime*1000)
+        //console.log(e)
+        ms=e%1000
+        e=(e-ms)/1000
+        s=e%60
+        e=(e-s)/60
+        m=e%60
+        e=(e-m)/60
+        h=e
+        return toTwo(h)+':'+toTwo(m)+':'+toTwo(s)//+'.'+toTwo(ms)
+    }
+
+    function updateElapsed(){
+        rawElapsed = $("#timeStart").data('time')
+        endTime=new Date().getTime()
+        if ($("#timeElapsed").data('state')!=1){
+            endTime=($('#timeStop').data('time')*1000)
+        }
+        elapsed=getElapsedTime(rawElapsed,endTime)
+        document.getElementById("timeElapsed").innerHTML=elapsed
+    }
+
+    function getInfo(){
+        filename=document.getElementById("selectExp").value
+        name=filename.substring(0,filename.length-5)
+
+        document.getElementById("timeStart").innerHTML=""
+        document.getElementById("timeStop").innerHTML=""
+        if(name){
+            $.getJSON('update/experiments/info/'+name,
+            function(data){
+                console.log(data)
+                startTime=formatDate(data.ret[1])
+                $("#timeStart").data('time',data.ret[1])
+                $("#timeStop").data('time',data.ret[2])
+                $("#timeElapsed").data('state',data.ret[3])
+                //elapsedTime=getElapsedTime(data.ret[1])
+                endTime=formatDate(data.ret[2])
+                running=data.ret[3]
+                switch(running){
+                    case 0:
+                        experiment_paused()
+                        break;
+                    case 1:
+                        experiment_running()
+                        break;
+                    case 2:
+                        experiment_stopped()
+                        break;
+                    default:
+                        experiment_paused()
+                        break;
+                }
+                if(data.ret[1]!="-1"){
+                document.getElementById("timeStart").innerHTML=startTime}
+                //document.getElementById("timeElapsed").innerHTML=elapsedTime
+                if(data.ret[2]!="-1"){
+                document.getElementById("timeStop").innerHTML=endTime}
+                updateElapsed()
+
+            }
+            )}
+    }
+
+    function start_experiment(){
+        filename=document.getElementById("selectExp").value
+        name=filename.substring(0,filename.length-5)
+        console.log(name)
+        $.ajax({
+            url:'update/experiments/start/'+name,
+            type:'post',
+            success:function(){experiment_running();setTimeout(getInfo(),500)}
+        })
+    }
+
+    function stop_experiment(){
+        filename=document.getElementById("selectExp").value
+        name=filename.substring(0,filename.length-5)
+        console.log(name)
+        $.ajax({
+            url:'update/experiments/end/'+name,
+            type:'post',
+            success:function(){experiment_stopped();setTimeout(getInfo(),500)}
+        })
+    }
+
+    function experiment_running(){
+        $('#startExp').prop('disabled',true);
+        $('#stopExp').prop('disabled',false);
+        var elapsedLoop = setInterval(function(){updateElapsed(),1000})
+    }
+
+    function experiment_paused(){
+        $('#startExp').prop('disabled',false);
+        $('#stopExp').prop('disabled',true);
+        clearInterval(runTime)
+    }
+
+    function experiment_stopped(){
+        $('#startExp').prop('disabled',true);
+        $('#stopExp').prop('disabled',true);
+        clearInterval(runTime)
+    }
+    
+    document.getElementById("newExpName").value="";
+
+    update_Experiments()
+    var  runTime= setInterval(function(){getInfo()},10000);
+
+    $("#selectExp").change(function(){
+        current=$(this).find('option:selected').val();
+        getInfo()
+        if(current=="0"){
+            $("#contExpNew").show();
+            $("#contExpSel").hide();
+        }
+        else{
+            $("#contExpNew").hide();
+            $("#contExpSel").show();
+            //getInfo();
+
+        }
+    })
+    $("#newExpBut").click(function(){
+        name=document.getElementById("newExpName").value;
+        document.getElementById("newExpName").value=''
+        console.log(name);
+        $.ajax({
+            url:'/update/experiments/new/'+name,
+            type:'post',
+            success:function(){
+                console.log("Created Experiment:"+name);
+                $.getJSON('/update/experiments/list/none',
+                    function(data){
+                        Exp=[]
+                        $("#selectExpGroup").empty();
+                        for(let i=0;i<data.ret.length;i++){
+                            Exp.push(data.ret[i])
+                        }
+                        listExp=Exp
+                        selectExperiment=document.getElementById("selectExp")
+                        group=document.getElementById("selectExpGroup");
+                        for (var i = 0; i<listExp.length;i++){
+                            var newOption = document.createElement('option');
+                            newOption.innerHTML=listExp[i];
+                            group.appendChild(newOption)
+                        }
+                        fileName=name+'.json'
+                        selectExperiment.value=fileName;
+                        document.getElementById("selectExp").dispatchEvent(new Event('change'));
+                        //getInfo()
+                    });
+        }
+
+        });
+        
+        
+    });
+
+    $("#startExp").click(function(){start_experiment();setTimeout(getInfo(),500)})
+    $("#stopExp").click(function(){stop_experiment();setTimeout(getInfo(),500)})
+</script>
+
+
+
+
 <div id ="experiment" style="margin-bottom: 15%"></div>
 <div id="leftBorder"></div>
 <div id="rightBorder"></div>
@@ -138,71 +379,8 @@ function basicDisplay(indexing,object,side){
         document.getElementById("DivChild"+i+side).classList.add('textBox');
     }
 }
-function experimentCycle(){
-
-    ex = document.getElementById("experiment");
-    var newLine = document.createElement('div');
-    newLine.classList.add('linebreak')
 
 
-    var nameDiv=document.createElement('div');
-    nameDiv.classList.add('experimentBox');
-    var timeDiv=document.createElement('div');
-    timeDiv.classList.add('experimentBox');
-    var buttonDiv=document.createElement('div');
-    buttonDiv.classList.add('experimentBox');
-
-    var name = document.createElement('input');
-    var fileName = document.createElement('div');
-    var setName = document.createElement('button');
-    setName.className="btn btn-primary";
-    var startTime = document.createElement('div');
-    var runTime = document.createElement('div');
-    var start = document.createElement('button')
-    start.className="btn btn-primary btn-sm";
-    start.innerHTML="Start"
-    var stop = document.createElement('button');
-    stop.className="btn btn-danger btn-sm";
-    stop.innerHTML="Stop"
-
-    name.id="experimentName";
-    fileName.id="fileName";
-    startTime.id="startTime";
-    runTime.id="runTime";
-    start.id="startButton";
-    stop.id="stopButton";
-
-    ex.append(nameDiv);
-    ex.append(timeDiv);
-    ex.append(buttonDiv);
-
-
-    nameDiv.innerHTML+="<p style='float:right;margin-right:0%;margin-left:auto'>Name: </p>";
-    nameDiv.appendChild(name);
-    name.append(newLine);
-    //nameDiv.appendChild(setName);
-    nameDiv.appendChild(newLine);
-    nameDiv.appendChild(fileName);
-    $('#experimentName').css({float:"right",textAlign:"center",backgroundColor:"white",marginLeft:"0%",marginRight:"0%",border:"1px solid black",width:"50%",height:"fit-content"});
-    $('#fileName').css({float:"right",textAlign:"center",marginLeft:"auto",marginRight:"0%",border:"1px solid black",width:"50%"});
-    fileName.innerHTML="testName";
-
-    timeDiv.innerHTML+="<p>Start Time: </p>";
-    timeDiv.appendChild(startTime);
-    timeDiv.appendChild(newLine);
-    timeDiv.innerHTML+="<p>Run Time: </p>";
-    timeDiv.appendChild(runTime);
-
-    buttonDiv.appendChild(start);
-    buttonDiv.appendChild(newLine);
-    buttonDiv.appendChild(stop);
-
-
-}
-
-
-
-experimentCycle();
 basicDisplay(values,sensors,"left");
 basicDisplay(targets,controls,"right");
 update_values();
