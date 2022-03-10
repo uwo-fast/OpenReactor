@@ -76,6 +76,15 @@ class experiment(object):
         json.dump(fromJson,f)
         f.close()
 
+
+    def delete(self,name):
+        """
+        Deletes experiment
+        """
+        os.remove(self.dir+"/"+name+".json")
+        return True
+
+
     def info(self,name):
         """
         Returns the name, start, and end times for experiment.

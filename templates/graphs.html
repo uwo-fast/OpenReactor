@@ -1,8 +1,8 @@
- {% extends 'layout.html' %}
+ {% extends 'experiment_bar.html' %}
 
 {% block body %}
 
-<button class="btn btn-primary btn-lg" type="button" onclick="newCanvas(charts)">New Graph</button>
+<button class="btn btn-primary btn-lg" type="button" id="graphButton" onclick="newCanvas(charts)">New Graph</button>
 <input type="text" id="output" hidden/>
 <br>
 <script>
@@ -80,13 +80,14 @@
         $(newDrop).change(function (){
             dev = {{Devices | safe}}
             sel=[];
+            selected=getSelected()
             sel.push(dev[$(this).find('option:selected').val()]);
             if(sel[0]==undefined){sel[0]="-1"};
             console.log(sel)
             sel_data=JSON.stringify(sel);
             num=$(this).data().data;
             $.ajax({
-                  url: '/update/graphs/'+num,
+                  url: '/update/graphs/'+num+'/'+selected,
                   type: 'post',
                   contentType: 'application/json',
                   dataType:'json',
@@ -108,26 +109,62 @@
   //update_values([name],0);
 }
 
+
+
+$("#selectExp").change(function(){
+        selected=getSelected()
+        console.log(selected)
+        if(selected!=0){
+                //selected=selected.substring(0,selected.length-5)
+                console.log(selected)
+                for (let i=0;i<charts.length;i++){
+                        update_values([charts[i]],i)
+                }
+
+                $("#graphButton").prop('disabled',false)
+        }
+        else{
+                $("#graphButton").prop('disabled',true)
+        }
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+$("#graphButton").prop('disabled',true);
+
 update_values(charts);
 var intervalID = setInterval(function(){
         for (let i=0;i<charts.length;i++){
                 update_values([charts[i]],i)}
         },10000);
 function update_values(numGraphs,j){
-   for (let i=0;i<numGraphs.length;i++){
-    $.getJSON('/update/graphs/'+j,
-    function(dataNew) {
-         $('#Time').text(dataNew.Time);
-         $('#Values').text(dataNew.Values);
-         $('#Title').text(dataNew.Title);
-         $('#Parsed').text(dataNew.Parsed);
-         console.log(dataNew)
-    numGraphs[0].data.datasets[0].data=dataNew.Parsed;
-    numGraphs[0].data.datasets[0].label=dataNew.Title;
-    numGraphs[0].update();
-         });
- }
-       }
+        selected=getSelected()
+
+        for (let i=0;i<numGraphs.length;i++){
+        $.getJSON('/update/graphs/'+j+'/'+selected,
+        function(dataNew) {
+                $('#Time').text(dataNew.Time);
+                $('#Values').text(dataNew.Values);
+                $('#Title').text(dataNew.Title);
+                $('#Parsed').text(dataNew.Parsed);
+                console.log(dataNew)
+        numGraphs[0].data.datasets[0].data=dataNew.Parsed;
+        numGraphs[0].data.datasets[0].label=dataNew.Title;
+        numGraphs[0].update();
+                        });
+                }
+        }
 
 
 </script>

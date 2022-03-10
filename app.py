@@ -4,6 +4,7 @@ export FLASK_APP=app
 export FLASK_ENV=development
 flask run
 """
+from datetime import datetime
 import json
 import flask
 import time
@@ -33,6 +34,25 @@ def innit_control():
     print(Control.select())
     #SensorData().define_control(name="System Toggle", target=-1,value=0)
 
+def experiment_entries(timeStart,timeEnd,name):
+    timeStart=datetime.fromtimestamp(timeStart)
+    timeEnd=datetime.fromtimestamp(timeEnd)
+    sensor=[]
+    values=[]
+    times=[]
+    if name=="all":
+        for v in SensorReading.select().where(SensorReading.time.between(timeStart,timeEnd)).order_by(SensorReading.time):
+            sensor.append(v.name)
+            values.append(v.value)
+            times.append(v.time.timestamp())
+        return sensor,values,times
+    else:
+        for v in SensorReading.select().where(SensorReading.name==name,SensorReading.time.between(timeStart,timeEnd)).order_by(SensorReading.time):
+            sensor.append(v.name)
+            values.append(v.value)
+            times.append(v.time.timestamp())
+        return sensor,values,times
+
 I2C_dev=[]
 innit_connected(I2C_dev)
 print(I2C_dev)
@@ -49,12 +69,13 @@ def index():
     return render_template("index.html")
 
 #graph update methods
-@app.route("/update/graphs/<graphID>",methods=['GET','POST'])
+@app.route("/update/graphs/<graphID>/<name>",methods=['GET','POST'])
 
-def update(graphID):
+def update(graphID,name):
         if request.method== 'GET':
                 print(toDisplay)
-                (time,values,title,toParse)=graphsUpdate(toDisplay[int(graphID)])
+                print("Selected:{}".format(name))
+                (time,values,title,toParse)=graphsUpdate(toDisplay[int(graphID)],name)
                 return json.dumps({'Time':time,'Values':values,'Title':title, 'Parsed':toParse})
         if request.method == 'POST':
                 data=request.json
@@ -80,7 +101,7 @@ def graphs():
     return render_template("graphs.html",Devices=devices)
     #(time1,values1,title1,toParse,time2,values2,title2,toParse2)=graphsUpdate()
     #return render_template("graphs.html", Time=time1, Values=values1, Title=title1,Parsed=toParse,Time2=time2,Values2=values2,Title2=title2,Parsed2=toParse2)
-def graphsUpdate(toDisplay):
+def graphsUpdate(toDisplay,selected):
     print(toDisplay)
     if toDisplay=="-1":
         time1=[]
@@ -90,12 +111,18 @@ def graphsUpdate(toDisplay):
     else:
         title1 = toDisplay+" over time"
         dataTime=[]
+        dataData=[]
+        """
         for Time in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
             dataTime.append(Time.time.timestamp())
-        dataData=[]
-        
         for Data in SensorReading.select().where(SensorReading.name==toDisplay).order_by(SensorReading.time):
             dataData.append(Data.value)
+        """
+        exp=experiment('./experiments')
+        sen,timeStart,timeEnd,running=exp.info(selected)
+        if timeEnd==-1:
+            timeEnd=datetime.fromtimestamp(time.time()).timestamp()
+        sen,dataData,dataTime=experiment_entries(timeStart,timeEnd,toDisplay)
         values1 = dataData
         #time1=[]
         time1=dataTime
@@ -198,5 +225,17 @@ def updateExp(method,name):
             success=exp.start(name)
         elif method=="end":
             success=exp.end(name)
+        elif method=="delete":
+            success=exp.delete(name)
         return flask.jsonify(success)
     
+@app.route("/download/csv/<selected>/<forSensor>",methods=['GET'])
+def createDownload(selected,forSensor):
+        dataTime=[]
+        dataData=[]
+        exp=experiment('./experiments')
+        sen,timeStart,timeEnd,running=exp.info(selected)
+        if timeEnd==-1:
+            timeEnd=datetime.fromtimestamp(time.time()).timestamp()
+        sen,dataData,dataTime=experiment_entries(timeStart,timeEnd,forSensor)
+        return json.dumps({'sensorName':sen,'values':dataData,'time':dataTime})
