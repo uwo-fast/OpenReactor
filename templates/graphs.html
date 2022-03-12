@@ -9,13 +9,20 @@
   charts=[];
   numCanvas=0;
   function newCanvas(chartArray){
+        /**
+         * Used to create a new graph to display the readings from a sensor
+         * 
+         * @param {array} chartArray            an array that contains the existing charts already plotted 
+         * 
+         * 
+         * */
         var newDiv = document.createElement('div');
         var newDrop = document.createElement('select');
         var newCan = document.createElement('canvas');
         var newBut = document.createElement('button');
         newBut.className = "btn btn-danger";
         newBut.innerHTML="X"
-        newDrop.className ="form-select form-select-lg mb-3";
+        newDrop.className ="form-select form-select-lg mb-3";           //creates a option in the dropdown for each sensor in the database 
                 dev = {{Devices | safe}}
                 var sel = new Option("Sensor","",false,false);
                 newDrop.append(sel);
@@ -23,16 +30,19 @@
                 var option = new Option(dev[i],i,false,false);
                 newDrop.append(option);
                 }
+        // assigns unique ids for each element of each graph
         newDrop.id = "Drop" + numCanvas;
         newCan.id ="Chart"+numCanvas;
         newDiv.id ="Div"+numCanvas;
         newBut.id = "But"+numCanvas;
+
         var context = newCan.getContext("2d");
         document.getElementById("cont").appendChild(newDiv);
         const locale = document.getElementById("Div"+numCanvas);
         locale.appendChild(newDrop);
         locale.appendChild(newBut);
         locale.appendChild(newCan);
+        // in line css junk
         $("#Div"+numCanvas).css({width:"500",height:"400px",display:"flex",float:"left"});
         $("#Drop"+numCanvas).css({width:"300px",float:"left",height:"40px"});
         $("#But"+numCanvas).css({width:"40px",height:"40px"});
@@ -41,15 +51,22 @@
         newCan.style.marginLeft="50px";
         newCan.style.height="300px"
         newDrop.style.marginLeft="50px";
+        // stores the chart ID number in the data of the dropdown and button, used when sending ajax requests
         $("#Drop"+numCanvas).data('data',numCanvas);
         $("#But"+numCanvas).data('data',numCanvas);
         newBut.onclick=function(){
+                /**
+                 * 
+                 *Adds behaviour to the remove Graph button that deletes the graph  
+                 * 
+                 */
                 console.log("id:"+$(this).data().data)
-                document.getElementById("Drop"+$(this).data().data).selectedIndex=0;
+                document.getElementById("Drop"+$(this).data().data).selectedIndex=0;            //resets to default to prevent the requests for readings
                 document.getElementById("Drop"+$(this).data().data).dispatchEvent(new Event('change'));
-                document.getElementById("Div"+$(this).data().data).remove();
+                document.getElementById("Div"+$(this).data().data).remove();            //removes div
 
         };
+        // creates empty chart 
         name = "Chart"+numCanvas;
         var name = new Chart(context,{
                 type:"scatter",
@@ -76,8 +93,13 @@
               
                     }
         });
-        chartArray.push(name);
+        chartArray.push(name);          //puts chart refrence in chartArray
         $(newDrop).change(function (){
+            /**
+             * 
+             * listener for change to dropdown, requests the data for selected sensor
+             * 
+             */
             dev = {{Devices | safe}}
             sel=[];
             selected=getSelected()
@@ -109,9 +131,37 @@
   //update_values([name],0);
 }
 
+function update_values(numGraphs,j){
+        /**
+         * 
+         * Updates the currently displayed graphs.
+         * 
+         * @param {}
+         * 
+         */
+        selected=getSelected()
 
+        //for (let i=0;i<numGraphs.length;i++){
+        $.getJSON('/update/graphs/'+j+'/'+selected,
+        function(dataNew) {
+                $('#Time').text(dataNew.Time);
+                $('#Values').text(dataNew.Values);
+                $('#Title').text(dataNew.Title);
+                $('#Parsed').text(dataNew.Parsed);
+                console.log(dataNew)
+                numGraphs[0].data.datasets[0].data=dataNew.Parsed;
+                numGraphs[0].data.datasets[0].label=dataNew.Title;
+                numGraphs[0].update();
+                        });
+                //}
+        }
 
 $("#selectExp").change(function(){
+        /**
+         * 
+         * On change to selected experiment will update the data set used for the graphing, if no exeperiment is selected disables the graph button
+         * 
+         */
         selected=getSelected()
         console.log(selected)
         if(selected!=0){
@@ -132,39 +182,16 @@ $("#selectExp").change(function(){
 
 
 
-
-
-
-
-
-
-
-
-
 $("#graphButton").prop('disabled',true);
 
-update_values(charts);
+//update_values(charts);
+
+// Sets the update intervals for the graphs 
 var intervalID = setInterval(function(){
         for (let i=0;i<charts.length;i++){
                 update_values([charts[i]],i)}
         },10000);
-function update_values(numGraphs,j){
-        selected=getSelected()
 
-        for (let i=0;i<numGraphs.length;i++){
-        $.getJSON('/update/graphs/'+j+'/'+selected,
-        function(dataNew) {
-                $('#Time').text(dataNew.Time);
-                $('#Values').text(dataNew.Values);
-                $('#Title').text(dataNew.Title);
-                $('#Parsed').text(dataNew.Parsed);
-                console.log(dataNew)
-        numGraphs[0].data.datasets[0].data=dataNew.Parsed;
-        numGraphs[0].data.datasets[0].label=dataNew.Title;
-        numGraphs[0].update();
-                        });
-                }
-        }
 
 
 </script>

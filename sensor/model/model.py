@@ -66,10 +66,13 @@ class SensorData(object):
         Sensor.get_or_create(name=name, units=units)
 
     def define_control(self,name,target,value):
-
+        """Define the specified control and add it to the database.  If a control
+        of the same name, type, and pin exists then nothing will be added.
+        """
         Control.get_or_create(name=name,target=target,value=value)
 
     def get_control(self):
+        """Returns a list of all the controls defined in the database."""
         return Control.select()
 
     def get_sensors(self):
