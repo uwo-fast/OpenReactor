@@ -136,7 +136,8 @@ function update_values(numGraphs,j){
          * 
          * Updates the currently displayed graphs.
          * 
-         * @param {}
+         * @param {Chart} numGraphs             The graph object to be updated as defined in newCanvas.
+         * @param {int} j                       The graph index within both the array Charts and the toDisplay array found in app.py
          * 
          */
         selected=getSelected()
@@ -149,9 +150,9 @@ function update_values(numGraphs,j){
                 $('#Title').text(dataNew.Title);
                 $('#Parsed').text(dataNew.Parsed);
                 console.log(dataNew)
-                numGraphs[0].data.datasets[0].data=dataNew.Parsed;
+                numGraphs[0].data.datasets[0].data=dataNew.Parsed;              //used to add data to graph object
                 numGraphs[0].data.datasets[0].label=dataNew.Title;
-                numGraphs[0].update();
+                numGraphs[0].update();                                          //redraws graph with new data
                         });
                 //}
         }
@@ -159,7 +160,7 @@ function update_values(numGraphs,j){
 $("#selectExp").change(function(){
         /**
          * 
-         * On change to selected experiment will update the data set used for the graphing, if no exeperiment is selected disables the graph button
+         * On change to selected experiment will update the data set used for the graphing, if no exeperiment is selected disables the graph button likewise is experiment is running or finished button enabled.
          * 
          */
         selected=getSelected()
