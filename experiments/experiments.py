@@ -18,6 +18,15 @@ class experiment(object):
             the directory where the experiment files are located 
         """
         self.dir=dir
+        self.running=0
+        f,r=self.list()
+        for i in range(len(f)):
+            fi=open(f[i],'r')
+            fromJson=json.load(fi)
+            fi.close()
+            if fromJson["running"]==1:
+                self.running+=1
+
 
 
     def list(self):
@@ -104,6 +113,7 @@ class experiment(object):
         fromJson["running"]=1       #sets running to 1, indicates that the experiment is actively running. 
         json.dump(fromJson,f)
         f.close()
+        self.running+=1
         return True
 
     def end(self,name):
@@ -126,6 +136,7 @@ class experiment(object):
         fromJson["running"]=2       #sets running to 2, indicates that the experiment is finished
         json.dump(fromJson,f)
         f.close()
+        self.running-=1
         return True
 
 
@@ -163,6 +174,6 @@ class experiment(object):
         
         f=open(self.dir+"/"+name+".json",'r')
         fromJson=json.load(f)
-        print(fromJson)
+        #print(fromJson)
         f.close()
         return [fromJson["name"],fromJson["startTime"],fromJson["endTime"],fromJson["running"]]

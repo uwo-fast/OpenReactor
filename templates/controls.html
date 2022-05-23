@@ -125,7 +125,7 @@ function update_values(){
     function(dataNew) {
 	 for(let i=0;i<dataNew.sen.length;i++){
 	 const str=''+i+'left';
-	 document.getElementById(str).innerHTML=dataNew.val[i];
+	 document.getElementById(str).innerHTML=Math.round(dataNew.val[i]*100)/100;
     }
     for(let i=0;i<dataNew.con.length;i++){
         const str=''+i+'right';

@@ -110,6 +110,7 @@ function getSelected(){
             listExp=Exp
             selectExperiment=document.getElementById("selectExp")
             group=document.getElementById("selectExpGroup");
+            console.log(listExp)
             for (var i = 0; i<listExp.length;i++){
                 $.getJSON('/update/experiments/info/'+listExp[i],function(data){
                     var newOption = document.createElement('option');

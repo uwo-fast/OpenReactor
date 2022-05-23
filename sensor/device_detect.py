@@ -29,24 +29,52 @@ class connected:
     def __init__(self,devs=[]):
         #print(dir)
         self.devs=devs
+        self.cons=[]
         i2c=busio.I2C(SCL,SDA)
         devices=i2c.scan()
         i2c.deinit()
+        file=open(dir+'/devices.json')
+        full_dict=json.load(file)
+        dev_dict=full_dict["DEVICES"]
+        con_dict=full_dict["CONTROLS"]
+        self.dev=dev_dict
+        self.con=con_dict
         for dev in devices:
             addrs=dev
-            name=self.find_dev(dev,'name')
-            form=self.find_dev(dev,'form')
-            unit=self.find_dev(dev,'unit')
-            req_msg=self.find_dev(dev,'req_msg')
-            delay=self.find_dev(dev,'delay')
-            read_length=self.find_dev(dev,'read_length')
-            self.devs.append((addrs,name,unit,form,req_msg,delay,read_length))
+            dev_name=self.find_dev(dev,'name')
+            if dev_name:
+                form=self.find_dev(dev,'form')
+                unit=self.find_dev(dev,'unit')
+                req_msg=self.find_dev(dev,'req_msg')
+                delay=self.find_dev(dev,'delay')
+                read_length=self.find_dev(dev,'read_length')
+                if type(dev_name) is list:
+                    for i in range(len(dev_name)):
+                        self.devs.append((addrs,dev_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i]))
+                else:
+                    self.devs.append((addrs,dev_name,unit,form,req_msg,delay,read_length))
+            con_name=self.find_con(dev,'name')
+            if con_name:
+                form=self.find_con(dev,'form')
+                unit=self.find_con(dev,'unit')
+                req_msg=self.find_con(dev,'req_msg')
+                delay=self.find_con(dev,'delay')
+                read_length=self.find_con(dev,'read_length')
+                target=self.find_con(dev,'target')
+                params=self.find_con(dev,'params')
+                def_state=self.find_con(dev,'def_state')
+                if type(con_name) is list:
+                    for i in range(len(con_name)):
+                        self.cons.append((addrs,con_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i],target[i],params[i],def_state[i]))
+                else:
+                    self.cons.append((addrs,con_name,unit,form,req_msg,delay,read_length,target,params,def_state))
     def find_dev(self,addr,search):
-        file=open(dir+'/devices.json')
-        dict=json.load(file)
-        for dev in dict['DEVICES']:
+        for dev in self.dev:
             if dev['address']==addr:
                 return dev[search]
-
+    def find_con(self,addr,search):
+        for con in self.con:
+            if con['address']==addr:
+                return con[search]
 
         

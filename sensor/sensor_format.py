@@ -12,7 +12,10 @@ def form(form,data):
         result=list(map(lambda x: chr(x & ~0x80),list(data)))
         result=result[1:6]
         result="".join(map(str,result))
-
+    elif form=="none":
+        print("data:{}".format(data))
+        result="".join(map(str,data))
+        print(result)
 
 
     return result

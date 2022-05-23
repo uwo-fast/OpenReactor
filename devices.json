@@ -29,6 +29,32 @@
       "req_msg":5,
       "delay":0.0,
       "read_length":2
+   },
+   {
+      "name":["Arduino Test I2C","Arduino Test I2C 2"],
+      "address":97,
+      "unit":["",""],
+      "form":["byte","byte"],
+      "req_msg":[[82,72],[76,82]],
+      "delay":[0.0,0.0],
+      "read_length":[4,4]
+   }
+],
+"CONTROLS":[
+   {
+      "name":"Control Test",
+      "address":97,
+      "unit":"",
+      "form":"byte",
+      "req_msg":[82,72],
+      "delay":0.0,
+      "read_length":4,
+      "target":1,
+      "params":{
+         "min":0,
+         "max":0
+      },
+      "def_state":false
    }
 ]
 }

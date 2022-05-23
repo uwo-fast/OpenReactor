@@ -63,7 +63,7 @@
                 console.log("id:"+$(this).data().data)
                 document.getElementById("Drop"+$(this).data().data).selectedIndex=0;            //resets to default to prevent the requests for readings
                 document.getElementById("Drop"+$(this).data().data).dispatchEvent(new Event('change'));
-                document.getElementById("Div"+$(this).data().data).remove();            //removes div
+                document.getElementById("Div"+$(this).data().data).remove();                    //removes div
 
         };
         // creates empty chart 
@@ -165,20 +165,25 @@ $("#selectExp").change(function(){
          */
         selected=getSelected()
         console.log(selected)
-        if(selected!=0){
+        if(selected!=0){                
                 //selected=selected.substring(0,selected.length-5)
                 console.log(selected)
                 for (let i=0;i<charts.length;i++){
                         update_values([charts[i]],i)
                 }
 
-                $("#graphButton").prop('disabled',false)
+                $("#graphButton").prop('disabled',false)                //if experiment selected enable graphing 
         }
         else{
-                $("#graphButton").prop('disabled',true)
+                $("#graphButton").prop('disabled',true)                 //disable graphing
         }
 })
-
+document.getElementById("deleteExp").addEventListener('click',function(){
+        for (let i=0;i<charts.length;i++){
+                if(document.getElementById("But"+i)){
+                document.getElementById("But"+i).dispatchEvent(new Event('click'));}
+                }
+})
 
 
 
@@ -189,7 +194,7 @@ $("#graphButton").prop('disabled',true);
 
 // Sets the update intervals for the graphs 
 var intervalID = setInterval(function(){
-        for (let i=0;i<charts.length;i++){
+        for (let i=0;i<charts.length;i++){              //updates every chart every 10 seconds
                 update_values([charts[i]],i)}
         },10000);
 

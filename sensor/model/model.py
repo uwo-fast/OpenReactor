@@ -7,6 +7,8 @@
 # License: Public Domain
 
 from peewee import *
+from playhouse.postgres_ext import *
+import json
 
 
 db = SqliteDatabase('../openreactor.db', check_same_thread=False)
@@ -36,8 +38,18 @@ class SensorReading(Model):
 
 class Control(Model):
     name = CharField()
-    target = FloatField()
-    value = FloatField()
+    units=CharField()
+    def_state=BooleanField()
+
+    class Meta:
+        database = db
+
+class ControlReading(Model):
+    time=DateTimeField()
+    name=CharField()
+    value=FloatField()
+    params=JSONField()
+    target=FloatField()
 
     class Meta:
         database = db
@@ -54,7 +66,7 @@ class SensorData(object):
         db.connect(reuse_if_open=True)
         # Make sure the tables are created (safe=True, otherwise they might be
         # deleted!).
-        db.create_tables([Sensor, SensorReading,Control], safe=True)
+        db.create_tables([Sensor, SensorReading,Control,ControlReading], safe=True)
 
     def define_sensor(self, name, units):
         """Define the specified sensor and add it to the database.  If a sensor
@@ -65,11 +77,11 @@ class SensorData(object):
         # Very handy!
         Sensor.get_or_create(name=name, units=units)
 
-    def define_control(self,name,target,value):
+    def define_control(self,name,units,def_state):
         """Define the specified control and add it to the database.  If a control
         of the same name, type, and pin exists then nothing will be added.
         """
-        Control.get_or_create(name=name,target=target,value=value)
+        Control.get_or_create(name=name,units=units,def_state=def_state)
 
     def get_control(self):
         """Returns a list of all the controls defined in the database."""
@@ -82,6 +94,13 @@ class SensorData(object):
         # Use the select function to get all the sensors (effectively a SQL
         # SELECT * FROM... query).
         return Sensor.select()
+
+    def add_control_status(self,time,name,value,params,target):
+        ControlReading.create(time=time,name=name,value=value,params=params,target=target)
+
+    def reset_control(self,def_state):
+        self.value=def_state
+
 
     #def get_average_readings(self, name, limit=30):
 
