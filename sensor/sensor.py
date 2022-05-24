@@ -48,7 +48,7 @@ class I2C:
     """
     Class used to define I2C devices connected to the system, contains methods for measurement and database interfacing
     """
-    def __init__(self, name, units,form="atlas", address=99, request_message=0x52, delay=0.9, read_length=31,target=-1,params=-1,def_state=False):
+    def __init__(self, name, units,form="atlas", address=99, request_message=0x52, delay=0.9, read_length=31,enabled=-1,params=-1,def_state=False):
         """
         contains all essential information for communication with the device, defaults to atlas pH sensor
         Parameters
@@ -77,13 +77,13 @@ class I2C:
         self.value = 0.000
         self.time = datetime.datetime.now()
         self.form = form
-        self.target=target
+        self.enabled=enabled
         self.params=params
         self.def_state=def_state
         self.db = model.SensorData()
-        if target==-1:
+        if params==-1:
             self.db.define_sensor(name, units)
-        elif target!=-1:
+        elif params!=-1:
             self.db.define_control(name,units,def_state)
 
 
@@ -100,7 +100,6 @@ class I2C:
             toWrite=self.req_msg
         else:
             toWrite=[self.req_msg]
-
         i2c.writeto(self.addr,bytes(toWrite),stop=False)
         result=bytearray(self.read_len)
         time.sleep(self.delay)
@@ -112,6 +111,18 @@ class I2C:
         self.value = result
         self.time = datetime.datetime.now()
         i2c.deinit()
+
+    def write(self):
+        i2c=busio.I2C(SCL, SDA, 400000)
+        toWrite=self.req_msg
+
+        i2c.writeto(self.addr,bytes(toWrite),stop=False)
+        i2c.deinit()
+
+    def controlMessage(self,message):
+        self.req_msg=message
+        self.value=self.req_msg
+        self.time = datetime.datetime.now()
 
     def readFalse(self):
         """Reads a false random float as a measurement :: only use for testing"""
@@ -125,17 +136,20 @@ class I2C:
 
     def store(self):
         """Stores the value of the latest sensor reading into the database."""
-        if self.target==-1:
+        if self.params==-1:
             self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
-        elif self.target!=-1:
-            self.db.add_control_status(time=self.time, name='{0}'.format(self.name), value=self.value,params=self.params,target=self.target)
+        elif self.params!=-1:
+            self.db.add_control_status(time=self.time, name='{0}'.format(self.name), value=self.value,enabled=self.enabled,params=self.params)
 
     def edit_params(self,newParams):
         self.params=newParams
         self.store()
 
+    def control_state(self,state):
+        self.enabled=state
+
     def reset_control(self):
-        self.db.reset_control(self.def_state)
+        self.enabled=self.def_state
         self.store()
 
     def print_value(self):
@@ -144,7 +158,7 @@ class I2C:
 
     def print_i2c_info(self):      
         """Prints the sensor's i2c info"""  
-        print("Address: {0}\nRead request message: {1}\nRead delay time: {2} seconds\nLength of read: {3} bits\n{4} \n".format(hex(self.addr), self.req_msg, self.delay, self.read_len))
+        print("Address: {0}\nRead request message: {1}\nRead delay time: {2} seconds\nLength of read: {3} bits\n".format(hex(self.addr), self.req_msg, self.delay, self.read_len))
 
     def print_db_info(self):
         """Prints the sensor's database info"""

@@ -42,19 +42,26 @@
 ],
 "CONTROLS":[
    {
-      "name":"Control Test",
+      "name":["Control Test","Control Test 2"],
       "address":97,
-      "unit":"",
-      "form":"byte",
-      "req_msg":[82,72],
-      "delay":0.0,
-      "read_length":4,
-      "target":1,
-      "params":{
+      "unit":["",""],
+      "form":["byte","byte"],
+      "req_msg":[[82,72],[54,23]],
+      "delay":[0.0,0.0],
+      "read_length":[4,4],
+      "enabled":[false,false],
+      "params":[{
          "min":0,
-         "max":0
+         "max":0,
+         "control":"control.demo"
       },
-      "def_state":false
+      {
+         "min":0,
+         "max":0,
+         "control":"control.demo"
+      }
+   ],
+      "def_state":[true,false]
    }
 ]
 }

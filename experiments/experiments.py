@@ -19,6 +19,7 @@ class experiment(object):
         """
         self.dir=dir
         self.running=0
+        self.running_start=-1
         f,r=self.list()
         for i in range(len(f)):
             fi=open(f[i],'r')
@@ -26,6 +27,7 @@ class experiment(object):
             fi.close()
             if fromJson["running"]==1:
                 self.running+=1
+                self.running_start=fromJson["startTime"]
 
 
 

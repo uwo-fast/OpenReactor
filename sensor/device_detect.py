@@ -26,9 +26,9 @@ dir = os.path.abspath(os.getcwd())
 
 
 class connected:
-    def __init__(self,devs=[]):
+    def __init__(self):
         #print(dir)
-        self.devs=devs
+        self.devs=[]
         self.cons=[]
         i2c=busio.I2C(SCL,SDA)
         devices=i2c.scan()
@@ -42,6 +42,8 @@ class connected:
         for dev in devices:
             addrs=dev
             dev_name=self.find_dev(dev,'name')
+            con_name=self.find_con(dev,'name')
+            #print(con_name)
             if dev_name:
                 form=self.find_dev(dev,'form')
                 unit=self.find_dev(dev,'unit')
@@ -50,24 +52,33 @@ class connected:
                 read_length=self.find_dev(dev,'read_length')
                 if type(dev_name) is list:
                     for i in range(len(dev_name)):
-                        self.devs.append((addrs,dev_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i]))
+                        try:
+                            self.devs.append((addrs,dev_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i]))
+                        except:
+                            raise Exception("\nIssue assigning device information for addresses with more than one device.\n Ensure that in devices.json all arguments except for address are arrays of the same length.") 
                 else:
                     self.devs.append((addrs,dev_name,unit,form,req_msg,delay,read_length))
-            con_name=self.find_con(dev,'name')
             if con_name:
+                #print("In Loop")
                 form=self.find_con(dev,'form')
                 unit=self.find_con(dev,'unit')
                 req_msg=self.find_con(dev,'req_msg')
                 delay=self.find_con(dev,'delay')
                 read_length=self.find_con(dev,'read_length')
-                target=self.find_con(dev,'target')
+                enabled=self.find_con(dev,'enabled')
                 params=self.find_con(dev,'params')
                 def_state=self.find_con(dev,'def_state')
                 if type(con_name) is list:
                     for i in range(len(con_name)):
-                        self.cons.append((addrs,con_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i],target[i],params[i],def_state[i]))
+                        try:
+                            self.cons.append((addrs,con_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i],enabled[i],params[i],def_state[i]))
+                        except:
+                            raise Exception("\nIssue assigning device information for addresses with more than one device.\n Ensure that in devices.json all arguments except for address are arrays of the same length.")
                 else:
-                    self.cons.append((addrs,con_name,unit,form,req_msg,delay,read_length,target,params,def_state))
+                    self.cons.append((addrs,con_name,unit,form,req_msg,delay,read_length,enabled,params,def_state))
+            elif not con_name and not dev_name:
+                print("Unknown Device found with addr :: {}".format(addrs))
+
     def find_dev(self,addr,search):
         for dev in self.dev:
             if dev['address']==addr:

@@ -19,11 +19,14 @@ $("#titleR").css({fontWeight:"bold",textAlign:"center",fontSize:"2.5em"});
 sensors = {{Sensors | safe}}
 values = {{Values | safe}}
 controls = {{Controls | safe}}
-targets = {{Targets | safe}}
+enabled = {{Enabled | safe}}
 conVal={{ControlsValues | safe}}
+params={{Params | safe}}
+console.log(params)
 console.log(controls)
-console.log(targets)
+console.log(enabled)
 
+let conId=[];
 var side = ["left","right"];
 
 function basicDisplay(indexing,object,side){
@@ -65,51 +68,85 @@ function basicDisplay(indexing,object,side){
         if(side=="right"){
             var newName= document.createElement('div');
             var newData=document.createElement('div');
-            var newTarget = document.createElement('div');
+            var newEnabled = document.createElement('div');
             var newBut = document.createElement('button');
             var newInput = document.createElement('input');
+            var newSelect = document.createElement('select')
             newName.innerHTML=""+object[i]+"<br>Actual:<br>";
             newName.id = "DivChild"+i+side;
             newData.id = ""+i+side;
             newName.appendChild(newData);
-            newName.appendChild(newTarget);
+            newName.appendChild(newEnabled);
             newName.appendChild(newBut);
             newData.innerHTML = conVal[i];
-            newTarget.innerHTML = "Target:<br>";
+            newEnabled.innerHTML = "Enabled:<br>";
+            /*
             newInput.type="number";
             newInput.id=""+i+"input";
-            newInput.value=targets[i];
+            newInput.value=enabled[i];
             newInput.style = "width:50%;text-align:center";
-            newTarget.appendChild(newInput);
+            newEnabled.appendChild(newInput);
+            */
+           newSelect.id=""+i+"select";
+           var selFalse=new Option("False",0,false);
+           var selTrue=new Option("True",1,false);
+           newSelect.append(selFalse);
+           newSelect.append(selTrue);
+           newSelect.selectedIndex=enabled[i]
+           newEnabled.appendChild(newSelect);
+           par=params[i]
+           conId[i]=[]
+           for (const p in par){
+               if(p!='control'){
+               var parDev=document.createElement('div');
+               parDev.innerHTML=""+p+":<br>"
+               parDev.id="ParDev"+i+"-"+p
+               var parIn=document.createElement('input');
+               parIn.type="number";
+               parIn.id="parIn"+i+"-"+p
+               conId[i].push([p,parIn.id]);
+               parIn.style="width:50%;text-align:center";
+               parDev.appendChild(parIn)
+               newEnabled.appendChild(parDev)}
+           }
             const locale = document.getElementById("Div"+object[i]);
             locale.appendChild(newName);
             newBut.className="btn btn-primary btn-sm";
-            newBut.innerHTML="Set Target"
+            newBut.innerHTML="Set"
             newBut.id="button"+i+side;
+
+            conId[i].push(["enabled",newSelect.id])
+            
+ 
             newBut.onclick=function(){
                 console.log("Button Pressed");
-                controlIn = document.getElementById(""+i+"input").value;
-                console.log("Set target to "+controlIn);
-                toSend=[object[i],controlIn];
-                toSend=JSON.stringify(toSend);
-                console.log(toSend);
+                //controlIn = document.getElementById(""+i+"input").value;
+                out={'name':object[i],'control':params[i]['control']}
+                //for(let j=0;j<conId[i].length;j++){
+                    for(let c in conId[i]){
+                        out[conId[i][c][0]]=$(`#`+conId[i][c][1]).val()
+                    }
+                //}
+                //toSend=[object[i],controlIn];
+                toSend=JSON.stringify(out);
+                //console.log(toSend);
                 $.ajax({
                     url:'/controls/measure/'+'control',
                     type:'post',
                     contentType:'application/json',
                     dataType:'json',
                     data:toSend,
-                    success:function(){console.log("Success");}
+                    success:function(res){console.log(res);}
                 })
             }
 
-            //newDiv.innerHTML="Target:<br>"+"<div id='divVal"+i+side+"target'>"+targets[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"";
-            //newDiv.append(" "+object[i]+"<br>Target:<br>"+"<div id='divVal"+i+side+"target'>"+targets[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"</div>")
+            //newDiv.innerHTML="Enabled:<br>"+"<div id='divVal"+i+side+"Enabled'>"+enabled[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"";
+            //newDiv.append(" "+object[i]+"<br>Enabled:<br>"+"<div id='divVal"+i+side+"Enabled'>"+enabled[i]+"</div>Actual:<br>"+"<div id = 'divVal" +i+side+"actual'>"+conVal[i]+"</div>")
         }
         console.log(newDiv)
         $("#"+side+"Border").append(newDiv);
         $("#"+i+side).css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
-        //$("#"+i+side+"target").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
+        //$("#"+i+side+"Enabled").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
         //$("#"+i+side+"actual").css({textAlign:"center",backgroundColor:"white",marginLeft:"auto",marginRight:"auto",border:"1px solid black",width:"50%"});
         document.getElementById("DivChild"+i+side).classList.add('textBox');
     }
@@ -117,7 +154,7 @@ function basicDisplay(indexing,object,side){
 
 
 basicDisplay(values,sensors,"left");
-basicDisplay(targets,controls,"right");
+basicDisplay(enabled,controls,"right");
 update_values();
 var intervalID = setInterval(function(){update_values()},10000);
 function update_values(){
@@ -130,8 +167,12 @@ function update_values(){
     for(let i=0;i<dataNew.con.length;i++){
         const str=''+i+'right';
         //const strTar=''+i+'input';
-        document.getElementById(str).innerHTML=dataNew.con_val
-        
+        document.getElementById(str).innerHTML=dataNew.con_val[i]
+        document.getElementById(''+i+'select').selectedIndex=dataNew.en[i]
+        for(const p in params[i]){
+            //onsole.log(dataNew.par[i][p])
+            $('#parIn'+i+"-"+p).val(dataNew.par[i][p])
+        }
     }
          sensors=dataNew.sen;
          values=dataNew.val;

@@ -7,11 +7,12 @@
 # License: Public Domain
 
 from peewee import *
-from playhouse.postgres_ext import *
+from playhouse.sqlite_ext import *
+#from playhouse.postgres_ext import *
 import json
 
 
-db = SqliteDatabase('../openreactor.db', check_same_thread=False)
+db = SqliteExtDatabase('../openreactor.db', check_same_thread=False)
 
 
 # Define data model classes that inherit from the Peewee ORM Model class.
@@ -49,7 +50,7 @@ class ControlReading(Model):
     name=CharField()
     value=FloatField()
     params=JSONField()
-    target=FloatField()
+    enabled=BooleanField()
 
     class Meta:
         database = db
@@ -95,11 +96,12 @@ class SensorData(object):
         # SELECT * FROM... query).
         return Sensor.select()
 
-    def add_control_status(self,time,name,value,params,target):
-        ControlReading.create(time=time,name=name,value=value,params=params,target=target)
+    def add_control_status(self,time,name,value,params,enabled):
+        ControlReading.create(time=time,name=name,value=value,params=params,enabled=enabled)
 
     def reset_control(self,def_state):
-        self.value=def_state
+        self.enabled=def_state
+
 
 
     #def get_average_readings(self, name, limit=30):
