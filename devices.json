@@ -35,7 +35,7 @@
       "address":97,
       "unit":["",""],
       "form":["byte","byte"],
-      "req_msg":[[82,72],[76,82]],
+      "req_msg":[[82,72],[]],
       "delay":[0.0,0.0],
       "read_length":[4,4]
    }

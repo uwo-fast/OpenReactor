@@ -6,7 +6,6 @@ flask run
 """
 from datetime import datetime
 import json
-from multiprocessing.dummy import active_children
 import flask
 import time
 import os
@@ -23,8 +22,8 @@ dir = os.path.dirname(os.path.realpath(__file__))
 
 def innit_connected():
     """
-    Used to get all connected I2C devices 
-    Parameters 
+    Used to get all connected I2C sensors
+    Returns 
     ----------
     I2C_dev : array
         array that the I2C objects are appended to 
@@ -42,6 +41,14 @@ def innit_connected():
     return I2C_dev
 
 def innit_control():
+    """
+    Used to get all connected I2C control mechanisms
+    Returns
+    ----------
+    I2C_con : array
+        array that the I2C objects are appended to
+
+    """
     connected=ct()
     I2C_con=[]
     for dev in connected.cons:
@@ -50,6 +57,7 @@ def innit_control():
         feedbackModules[dev[1]]=importlib.import_module(dev[8]["control"])
         con=sensor.I2C(name=dev[1],units=dev[2],address=dev[0],form=dev[3],request_message=dev[4],delay=dev[5],read_length=dev[6],enabled=dev[7],params=dev[8],def_state=dev[9])
         I2C_con.append(con)
+        con.reset_control()
         if not ControlReading.select().where(ControlReading.name==con.name):
             print("Missing :: {}".format(con.name))
             #con.readEmpty()
@@ -102,6 +110,19 @@ def experiment_entries(timeStart,timeEnd,name):
         return sensor,values,times
 
 def experimentThread(cycle_length,dev,con):
+    """
+    The function that is used to obtain measurements and run processes in a seperate thread as to not interupt connection.
+    Measurements are obtained and formatted using the formatting code in 'sensors/sensor.py'
+    Control systems are defined by individual formatted python scripts placed in the directory 'control'. The specific script for each control needs to be specified as a parameter in 'devices.json'.
+    Restarts itself recursively until stopped.
+    ----------
+    cycle_length : int 
+        number of seconds between each cycle. NOTE:Does not include running time. 
+    dev : I2C object Array
+        array that holds all the I2C sensor objects as defined in 'sensor/sensor.py'
+    con : I2C object Array
+        array that holds all the I2C control objects as defined in 'sensor/sensor.py'
+    """
     with dataLock:
         global threadHandle
         global activeRead
@@ -114,23 +135,27 @@ def experimentThread(cycle_length,dev,con):
             except:
                 print("Error with Read of :: {}\n".format(d.name))
                 print(Exception)
-                print("Relaunching Thread")
-                experimentThreadStart(cycle_length,dev,con)
+                #experimentThreadStop()
+                #print("Relaunching Thread")
+                #experimentThreadStart(cycle_length,dev,con)
             #print('Stored :: {}'.format(d.name))
-        for c in con:
+        for i in range(len(con)):
             #print('Reading :: {}'.format(c.name))
+            c=con[i]
+            I2C=I2C_con[i]
             try:
                 if c.enabled:
                     m=feedbackModules[c.name]
-                    out=m.feedback(c.name).process()
+                    out=m.feedback(c.name,I2C).process()
                     c.controlMessage(out)
                     c.write()
                 c.store()
             except:
                 print("Error with Read of :: {}\n".format(c.name))
                 print(Exception)
-                print("Reloading Thread")
-                experimentThreadStart(cycle_length,experimentThread,dev,con)
+                #experimentThreadStop()
+                #print("Reloading Thread")
+                #experimentThreadStart(cycle_length,dev,con)
             #print('Stored :: {}'.format(c.name))
         activeRead=False    
         threadHandle=threading.Timer(cycle_length,experimentThread,(cycle_length,dev,con))
@@ -138,6 +163,10 @@ def experimentThread(cycle_length,dev,con):
         threadHandle.start()
     
 def experimentThreadStop():
+    """
+    Used to stop the thread and data aq. 
+    As the .cancel() function only kills the thread during the time interval stage, will recursively call itself until it can safely kill the thread
+    """
     global threadHandle
     global activeRead
     if not activeRead:
@@ -146,6 +175,17 @@ def experimentThreadStop():
         time.sleep(0.1)
         experimentThreadStop()
 def experimentThreadStart(cycle_length,dev,con):
+    """
+    Used to start the initial thread for data aq. 
+    Parameters
+    ----------
+    cycle_length : int 
+        number of seconds between each cycle. NOTE:Does not include running time. 
+    dev : I2C object Array
+        array that holds all the I2C sensor objects as defined in 'sensor/sensor.py'
+    con : I2C object Array
+        array that holds all the I2C control objects as defined in 'sensor/sensor.py'
+    """
     global threadHandle
     print("Starting Threading with interval :: {}".format(cycle_length))
     threadHandle=threading.Timer(cycle_length,experimentThread,(cycle_length,dev,con))
@@ -160,8 +200,6 @@ running_start=experiment('./experiments').running_start
 I2C_dev=innit_connected()
 I2C_con=innit_control()
 print(I2C_dev)
-innit_control()
-innit_control()
 toDisplay=[]        #array for currently displayed graphs
 devices=[]      #used to store all devices that have ever been connected
 controls=[]
@@ -176,14 +214,16 @@ Data=SensorData()       #init database class
 activeRead=False
 threadHandle=threading.Thread()
 dataLock=threading.Lock()
+
+
 THREAD_TIME=30
 
-try:
+try:                                                                        #Checks if thread is running, may not actually do anything
     experimentThreadStop()
 except:
     print("No Running Experiment Thread Found")
 
-if runningExperiments>0:
+if runningExperiments>0:                                                    #if the server has been shut down but there's still an experiment running, automatically resume data aq. 
     print("Experiment found to still be running on launch, resuming data gathering.")
     experimentThreadStart(THREAD_TIME,I2C_dev,I2C_con)
 
@@ -337,17 +377,16 @@ def controls():
         print("Name:{}".format(dev.name))
         #for i in SensorReading.select().where(SensorReading.name==dev.name):
         #    print("Reading:{}".format(i.value))
-        length=len(SensorReading.select().where(SensorReading.name==dev.name))
-        val=SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time)[length-1].value     #gets last measurement
+        val=SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc()).get().value     #gets last measurement
         print(val)
         values.append(val)
     for con in Control.select():        #for declared control systems
         controls.append(con.name)
-        valEnabled=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.name.desc())[-1].enabled
+        valEnabled=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().enabled
         enabled.append(str(valEnabled))
-        valCon=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.name.desc())[-1].value
+        valCon=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().value
         controls_values.append(valCon)
-        par=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.name.desc())[-1].params
+        par=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().params
         #del par["control"]
         pars.append(par)
     return render_template("controls.html",Sensors=sensors,Values=values,Controls=controls,Enabled=enabled,ControlsValues=controls_values,Params=pars)
@@ -370,18 +409,29 @@ def updateControls():
         for dev in Sensor.select():
             sensors.append(dev.name)
             print(dev.name)
-            values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc())[0].value)
+            values.append(SensorReading.select().where(SensorReading.name==dev.name).order_by(SensorReading.time.desc()).get().value)
             #for i, v in enumerate(values):
             #    values[i]=round(values[i],3)
         for con in Control.select():
             controls.append(con.name)
-            valEnabled=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.name.desc())[-1].enabled
+            valEnabled=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().enabled
             enabled.append(int(valEnabled))
-            valCon=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.name.desc())[-1].value
+            valCon=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().value
             controls_values.append(valCon)
-            par=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.name.desc())[-1].params
+            par=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().params
             pars.append(par)
         return json.dumps({'sen':sensors,'val':values,'con':controls,'en':enabled,'con_val':controls_values,'par':pars})
+
+@app.route("/controls/reset",methods=['POST'])
+def resetControls():
+    """
+    Resets the parameters of the control systems to default
+    """
+    global I2C_con
+    for con in I2C_con:
+        con.reset_control()
+    ret=updateControls()
+    return ('', 204)
 
 @app.route("/controls/measure/<side>",methods=['GET','POST'])
 def measure(side):
@@ -402,7 +452,7 @@ def measure(side):
                 if dev.name==sensor_measure:
                     dev.read()
                     dev.store()
-                    dev.print_info()
+                    #dev.print_info()
         elif side == "control":
             control_return=request.json
             nm=control_return['name']
@@ -417,7 +467,7 @@ def measure(side):
             #print(control_return)
             #q = Control.update({Control.target:control_return[1]}).where(Control.name==control_return[0])
             #q.execute()
-    return flask.jsonify(side)
+    return ('',204)
 
 @app.route("/update/experiments/<method>/<name>",methods=['GET','POST'])
 def updateExp(method,name):
@@ -459,12 +509,6 @@ def updateExp(method,name):
             time.sleep(1)
         return flask.jsonify(success)
     
-
-#@app.route("/update/devices",method=['GET'])
-#def updateDevices():
-#    I2C_dev=innit_connected()
-#    return I2C_dev 
-#
 
 
 @app.route("/download/csv/<selected>/<forSensor>",methods=['GET'])

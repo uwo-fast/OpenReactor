@@ -63,19 +63,13 @@ class SensorData(object):
 
     def __init__(self):
         """Initialize access to the DHT sensor reading database."""
-        # Connect to the database.
         db.connect(reuse_if_open=True)
-        # Make sure the tables are created (safe=True, otherwise they might be
-        # deleted!).
         db.create_tables([Sensor, SensorReading,Control,ControlReading], safe=True)
 
     def define_sensor(self, name, units):
         """Define the specified sensor and add it to the database.  If a sensor
         of the same name, type, and pin exists then nothing will be added.
         """
-        # Use the get_or_create function in Peewee to automatically try to find
-        # a sensor the specified name, type, pin and create it if not found.
-        # Very handy!
         Sensor.get_or_create(name=name, units=units)
 
     def define_control(self,name,units,def_state):
@@ -92,21 +86,12 @@ class SensorData(object):
         """Return a list of all the sensors defined in the database.
         Each instace in the list is a Sensor object.
         """
-        # Use the select function to get all the sensors (effectively a SQL
-        # SELECT * FROM... query).
         return Sensor.select()
 
     def add_control_status(self,time,name,value,params,enabled):
+        """Add a new status to the ControlReading table
+        """
         ControlReading.create(time=time,name=name,value=value,params=params,enabled=enabled)
-
-    def reset_control(self,def_state):
-        self.enabled=def_state
-
-
-
-    #def get_average_readings(self, name, limit=30):
-
-
     def get_recent_readings(self, name, limit=30):
         """Return a list of the most recent sensor readings with the specified
         name.  By default returns the last 30 readings in descending time order,

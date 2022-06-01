@@ -81,6 +81,7 @@ class I2C:
         self.params=params
         self.def_state=def_state
         self.db = model.SensorData()
+        self.def_params=params
         if params==-1:
             self.db.define_sensor(name, units)
         elif params!=-1:
@@ -100,7 +101,8 @@ class I2C:
             toWrite=self.req_msg
         else:
             toWrite=[self.req_msg]
-        i2c.writeto(self.addr,bytes(toWrite),stop=False)
+        if len(toWrite) !=0:
+            i2c.writeto(self.addr,bytes(toWrite),stop=False)
         result=bytearray(self.read_len)
         time.sleep(self.delay)
         i2c.readfrom_into(self.addr,result)
@@ -113,16 +115,18 @@ class I2C:
         i2c.deinit()
 
     def write(self):
+        """Used for control systems, writes only"""
         i2c=busio.I2C(SCL, SDA, 400000)
         toWrite=self.req_msg
-
-        i2c.writeto(self.addr,bytes(toWrite),stop=False)
+        i2c.writeto(self.addr,bytearray(toWrite),stop=False)
         i2c.deinit()
 
     def controlMessage(self,message):
+        """Used to change the byte array that is written to a given address. Store must be called seperately."""
         self.req_msg=message
-        self.value=self.req_msg
+        self.value=str(struct.unpack('f',self.req_msg)[0])
         self.time = datetime.datetime.now()
+        #print("req_msg :: {}".format(self.req_msg))
 
     def readFalse(self):
         """Reads a false random float as a measurement :: only use for testing"""
@@ -142,14 +146,19 @@ class I2C:
             self.db.add_control_status(time=self.time, name='{0}'.format(self.name), value=self.value,enabled=self.enabled,params=self.params)
 
     def edit_params(self,newParams):
+        """Used to edit the params of the control system"""
         self.params=newParams
         self.store()
 
     def control_state(self,state):
+        """Changes the enabled state of the control"""
         self.enabled=state
 
     def reset_control(self):
+        """Resets to default state"""
+        print(self.def_state)
         self.enabled=self.def_state
+        self.params=self.def_params
         self.store()
 
     def print_value(self):
