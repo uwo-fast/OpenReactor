@@ -3,10 +3,13 @@ An easily extensible open source turbidostat with pH and dissolved oxygen contro
 
 # Installation
 
-### For Linux Systems
+### For Ubuntu/Raspbian Systems
 ```sh
 # Make sure git is installed
 sudo apt install -y git
+
+#Make sure node is installed
+sudo apt install nodejs
 
 # Clone and enter repository
 git clone https://gitlab.com/mtu-most/most_openreactor
@@ -32,11 +35,20 @@ git submodule foreach git pull
 deactivate
 ```
 
-# Setup
+## Web Interface
+The web interface can be accessed by any computer on the same network. If you're connecting from a computer on the local network, this is the ip of the address of the computer running the server followed by `:5000`, for example `141.219.193.214:5000`. If you're accessing it from the same computer that is running the server this is also `localhost:5000`
+
+**Note** if youre unsure of the address, when launched the server will print the address that can be connected to in the console.
+- ``` * Running on http://141.219.193.214:5000/ (Press CTRL+C to quit)```
+
+Setup
+===
 ## Adding Devices
 To add an I2C device/sensor to the system it it must be defined properly in <i>devices.json</i>.
 
 <i>devices.json</i> contains two sections, "DEVICES" & "CONTROLS" any sensor needs to be added to "DEVICES" as well as any control mechanism that you also want to read from. I2C devices defined in "DEVICES" are read/read write. "CONTROLS" contains the information for any control system, and is write only. 
+
+**Note** connected devices are detected dynamically on launch, as such you can leave unused devices in *devices.json* but if a new device is added after the software is running the system must be rebooted. 
 
 An example of <i>devices.json</i> 
 
@@ -136,8 +148,6 @@ In the "DEVICES" section:
 
 **NOTE** that if multiple measurements need to be taken from a single device at one address every parameter must be given as a list except for the address (see "Arduino Test I2C", "Arduino Test I2C 2" in the example). 
 
-For "CONTROLS" in the first section two mechanisms are defined that will write to the same I2C address (in this case 97). This must be done in this manner and they cannot be listed seperately as you would for devices with seperate addresses.
-
 In the "CONTROLS" section:
 -
 - "name" is the string that is used as a name for the control like in "DEVICES" this must be unique, but can have the same name as an item in "DEVICES".
@@ -152,6 +162,9 @@ In the "CONTROLS" section:
     - parameters must be a single integer to be parsed by interface at the moment but can have any number of parameters.  
     - **NOTE** that the only required parameter is "control" where in this case model.demo is the absolute path to the feedback mechanism .py file (control.demo is equivalent to control/demo.py). 
 - "def_state" the default state of the control systems, (on : true, off : false).
+
+For "CONTROLS" in the first section two mechanisms are defined that will write to the same I2C address (in this case 97). This must be done in this manner and they cannot be listed seperately as you would for devices with seperate addresses.
+
 
 # Received bytes Formatting
 To process the recieved bytes into a parseable float/int/string an ```elif``` statement must be added to *sensor/sensor_format.py* where it's true condition correlates to the string given as "form" in *devices.json*
