@@ -23,4 +23,4 @@ pip install -r requirements.txt
 
 # Install NPM packages
 cd static
-npm i 
+npm i npm@latest
