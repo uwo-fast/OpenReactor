@@ -81,6 +81,7 @@ class feedback:
         self.params={}
         self.name=name
         self.I2C=I2C
+        self.outputType='f'
 
     def getData(self):
         """
@@ -101,7 +102,7 @@ class feedback:
         """
         Way of formatting the output float to a byte array that is parsed as a float. 
         """
-        self.data=struct.pack('f',self.data)
+        self.data=struct.pack(self.outputType,self.data)
 
     def process(self):
         """
