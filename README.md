@@ -171,10 +171,11 @@ To process the recieved bytes into a parseable float/int/string an ```elif``` st
 
 # Feedback Definition
 To define the feedback for a control system a ```.py``` file with a path as defined in *devices.json* must be created. 
-- The Class must be named ```feedback```.
+- The Class must be named ```feedback```
 - Must take the name of the control as an init argument
 - Must return a byte string that is the commmand to send over I2C to the device specified in 'devices.json' 
-- Return must be from a function called process that does not take any required arguments.  
+- Return must be from a function called process that does not take any required arguments
+- Must have property self.outputType a string that contains the type of packing used for the byte, ie. 'f' for a float or 'b' for a signed char
 
 **NOTE** see *control/demo.py* for an example and more information 
 
