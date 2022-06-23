@@ -125,7 +125,7 @@ class I2C:
     def controlMessage(self,message,type='f'):
         """Used to change the byte array that is written to a given address. Store must be called seperately."""
         self.req_msg=message
-        self.value=str(struct.unpack(type,self.req_msg)[0])
+        #self.value=str(struct.unpack(type,self.req_msg)[0])
         self.time = datetime.datetime.now()
         #print("req_msg :: {}".format(self.req_msg))
 
