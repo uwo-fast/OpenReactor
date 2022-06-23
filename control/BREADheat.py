@@ -11,6 +11,7 @@ class feedback:
         self.params={}
         self.name=name
         self.I2C=I2C
+        self.outputType='f'
 
     def getData(self):
         #data=SensorReading.select().where(SensorReading.name=='Adafruit Temperature Sensor').order_by(SensorReading.time)[-1].value
@@ -29,7 +30,7 @@ class feedback:
     def float2byte(self):
         out=b''
         for p in self.data:
-           out+=struct.pack('f',p)
+           out+=struct.pack(self.outputType,p)
         self.data=out
 
     def process(self):

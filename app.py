@@ -5,12 +5,14 @@ export FLASK_ENV=development
 flask run
 """
 from datetime import datetime
+from inspect import trace
 import json
 import flask
 import time
 import os
 import importlib
 import threading
+import traceback
 from flask import Flask, render_template, request
 from sensor import sensor
 from sensor.model.model import Sensor,SensorReading,Control,ControlReading,SensorData
@@ -133,8 +135,9 @@ def experimentThread(cycle_length,dev,con):
                 d.read()
                 d.store()
             except:
-                print("Error with Read of :: {}\n".format(d.name))
+                print("Error with Read of Sensor :: {}\n".format(d.name))
                 print(Exception)
+                traceback.print_exc()
                 #experimentThreadStop()
                 #print("Relaunching Thread")
                 #experimentThreadStart(cycle_length,dev,con)
@@ -146,13 +149,15 @@ def experimentThread(cycle_length,dev,con):
             try:
                 if c.enabled:
                     m=feedbackModules[c.name]
-                    out=m.feedback(c.name,I2C).process()
-                    c.controlMessage(out)
+                    cfb=m.feedback(c.name,I2C)
+                    out=cfb.process()
+                    c.controlMessage(out,cfb.outputType)
                     c.write()
                 c.store()
             except:
-                print("Error with Read of :: {}\n".format(c.name))
+                print("Error with Read of Control:: {}\n".format(c.name))
                 print(Exception)
+                traceback.print_exc()
                 #experimentThreadStop()
                 #print("Reloading Thread")
                 #experimentThreadStart(cycle_length,dev,con)

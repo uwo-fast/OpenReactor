@@ -11,6 +11,7 @@ Class must be named feedback
 Must take the name of the control as an init argument
 Must return a packed float that is the commmand to send over I2C to the device specified in 'devices.json' 
 Return must be from a function called process that does not take any required arguments. 
+Must have property self.outputType which is a string defining what the byte is packed as, ie. 'f'
 
 'devices.json' DEVICE LAYOUT
 ---------------------
@@ -81,6 +82,7 @@ class feedback:
         self.params={}
         self.name=name
         self.I2C=I2C
+        self.outputType='f'
 
     def getData(self):
         """
@@ -101,7 +103,7 @@ class feedback:
         """
         Way of formatting the output float to a byte array that is parsed as a float. 
         """
-        self.data=struct.pack('f',self.data)
+        self.data=struct.pack(self.outputType,self.data)
 
     def process(self):
         """
