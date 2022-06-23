@@ -149,8 +149,9 @@ def experimentThread(cycle_length,dev,con):
             try:
                 if c.enabled:
                     m=feedbackModules[c.name]
-                    out=m.feedback(c.name,I2C).process()
-                    c.controlMessage(out,m.outputType)
+                    cfb=m.feedback(c.name,I2C)
+                    out=cfb.process()
+                    c.controlMessage(out,cfb.outputType)
                     c.write()
                 c.store()
             except:
