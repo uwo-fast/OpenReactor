@@ -29,7 +29,7 @@ class feedback:
 
     def params2data(self):
       id=struct.pack(self.outputType,self.motorID)
-      p=struct.pack(self.outputType,self.params["Speed"]) #assuming that param is called speed
+      p=struct.pack(self.outputType,int(self.params["speed"])) #assuming that param is called speed
       self.data=id+p
 
 

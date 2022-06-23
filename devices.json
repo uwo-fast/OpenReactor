@@ -48,11 +48,11 @@
       "read_length":[4,4],
       "enabled":[false,false],
       "params":[{
-         "Speed":0,
+         "speed":0,
          "control":"control.BREADmotor_I"
        },
        {
-         "Speed":0,
+         "speed":0,
          "control":"control.BREADmotor_II"
        }],
        "def_state":[false,false]
