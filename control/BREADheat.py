@@ -38,3 +38,7 @@ class feedback:
         self.float2byte()
         output=self.data
         return output
+    def reset(self):
+        default=ControlReading.select().where(ControlReading.name==self.name).order_by(ControlReading.time.asc()).get().params
+        p=struct.pack(self.outputType,int(default["speed"]))
+        return (p)

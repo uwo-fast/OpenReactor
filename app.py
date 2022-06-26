@@ -147,10 +147,14 @@ def experimentThread(cycle_length,dev,con):
             c=con[i]
             I2C=I2C_con[i]
             try:
+                m=feedbackModules[c.name]
+                cfb=m.feedback(c.name,I2C)
                 if c.enabled:
-                    m=feedbackModules[c.name]
-                    cfb=m.feedback(c.name,I2C)
                     out=cfb.process()
+                    c.controlMessage(out,cfb.outputType)
+                    c.write()
+                if not c.enabled:
+                    out=cfb.reset()
                     c.controlMessage(out,cfb.outputType)
                     c.write()
                 c.store()
@@ -176,6 +180,21 @@ def experimentThreadStop():
     global activeRead
     if not activeRead:
         threadHandle.cancel()
+        for i in range(len(con)):
+            #print('Reading :: {}'.format(c.name))
+            c=con[i]
+            I2C=I2C_con[i]
+            try:
+                m=feedbackModules[c.name]
+                cfb=m.feedback(c.name,I2C)
+                out=cfb.reset()
+                c.controlMessage(out,cfb.outputType)
+                c.write()
+                c.store()
+            except:
+                print("Error with Reset of Control on Stop:: {}\n".format(c.name))
+                print(Exception)
+                traceback.print_exc()
     if activeRead:
         time.sleep(0.1)
         experimentThreadStop()

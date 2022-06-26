@@ -115,3 +115,7 @@ class feedback:
         self.getParams()
         output=self.data
         return output
+    def reset(self):
+        default=ControlReading.select().where(ControlReading.name==self.name).order_by(ControlReading.time.asc()).get().params
+        p=struct.pack(self.outputType,int(default["target"]))
+        return (p)

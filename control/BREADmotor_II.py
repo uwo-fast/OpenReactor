@@ -43,3 +43,8 @@ class feedback:
 
         output=self.data
         return output
+    def reset(self):
+        default=ControlReading.select().where(ControlReading.name==self.name).order_by(ControlReading.time.asc()).get().params
+        id=struct.pack(self.outputType,self.motorID)
+        p=struct.pack(self.outputType,int(default["speed"]))
+        return (id+p)
