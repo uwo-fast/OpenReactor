@@ -180,13 +180,12 @@ def experimentThreadStop():
     global activeRead
     if not activeRead:
         threadHandle.cancel()
-        for i in range(len(con)):
+        for i in range(len(I2C_con)):
             #print('Reading :: {}'.format(c.name))
-            c=con[i]
-            I2C=I2C_con[i]
+            c=I2C_con[i]
             try:
                 m=feedbackModules[c.name]
-                cfb=m.feedback(c.name,I2C)
+                cfb=m.feedback(c.name,c)
                 out=cfb.reset()
                 c.controlMessage(out,cfb.outputType)
                 c.write()
