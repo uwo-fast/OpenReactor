@@ -172,6 +172,7 @@ def experimentThread(cycle_length,dev,con):
         if newTime<=0:
             newTime=0                                                          #if it took longer than cycle length, start new readings right away
             cycle_length=cycle_length+abs(newTime)                             #update passed on cycle length as cycle isn't long enough for readings 
+            print("Experiment Cycle too short. Extended to :: {}".format(cycle_length))
         activeRead=False    
         threadHandle=threading.Timer(newTime,experimentThread,(cycle_length,dev,con))
         threadHandle.daemon=True
