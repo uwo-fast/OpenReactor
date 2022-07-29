@@ -129,6 +129,7 @@ def experimentThread(cycle_length,dev,con):
         global threadHandle
         global activeRead
         activeRead=True
+        threadStart=time.time()
         for d in dev:
             #print('Reading :: {}'.format(d.name))
             try:
@@ -166,8 +167,13 @@ def experimentThread(cycle_length,dev,con):
                 #print("Reloading Thread")
                 #experimentThreadStart(cycle_length,dev,con)
             #print('Stored :: {}'.format(c.name))
+        elapsed=time.time()-threadStart
+        newTime=cycle_length-elapsed                                           #accounts for time taken in measurements
+        if newTime<=0:
+            newTime=0                                                          #if it took longer than cycle length, start new readings right away
+            cycle_length=cycle_length+abs(newTime)                             #update passed on cycle length as cycle isn't long enough for readings 
         activeRead=False    
-        threadHandle=threading.Timer(cycle_length,experimentThread,(cycle_length,dev,con))
+        threadHandle=threading.Timer(newTime,experimentThread,(cycle_length,dev,con))
         threadHandle.daemon=True
         threadHandle.start()
     
