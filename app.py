@@ -22,6 +22,9 @@ app = Flask(__name__)
 
 dir = os.path.dirname(os.path.realpath(__file__))
 
+
+running = True
+
 def innit_connected():
     """
     Used to get all connected I2C sensors
@@ -128,6 +131,7 @@ def experimentThread(cycle_length,dev,con):
     with dataLock:
         global threadHandle
         global activeRead
+        global running
         activeRead=True
         threadStart=time.time()
         for d in dev:
@@ -174,9 +178,12 @@ def experimentThread(cycle_length,dev,con):
             cycle_length=cycle_length+abs(newTime)                             #update passed on cycle length as cycle isn't long enough for readings 
             print("Experiment Cycle too short. Extended to :: {}".format(cycle_length))
         activeRead=False    
-        threadHandle=threading.Timer(newTime,experimentThread,(cycle_length,dev,con))
-        threadHandle.daemon=True
-        threadHandle.start()
+        if running:
+            threadHandle=threading.Timer(newTime,experimentThread,(cycle_length,dev,con))
+            threadHandle.daemon=True
+            threadHandle.start()
+        else:
+            print("Ending Experiment")
     
 def experimentThreadStop():
     """
@@ -185,6 +192,8 @@ def experimentThreadStop():
     """
     global threadHandle
     global activeRead
+    global running
+    running=False
     if not activeRead:
         threadHandle.cancel()
         for i in range(len(I2C_con)):
