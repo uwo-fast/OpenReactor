@@ -23,8 +23,6 @@ app = Flask(__name__)
 dir = os.path.dirname(os.path.realpath(__file__))
 
 
-running = True
-
 def innit_connected():
     """
     Used to get all connected I2C sensors
@@ -226,6 +224,8 @@ def experimentThreadStart(cycle_length,dev,con):
         array that holds all the I2C control objects as defined in 'sensor/sensor.py'
     """
     global threadHandle
+    global running
+    running = True
     print("Starting Threading with interval :: {}".format(cycle_length))
     threadHandle=threading.Timer(cycle_length,experimentThread,(cycle_length,dev,con))
     threadHandle.daemon=True
