@@ -11,18 +11,18 @@
       "read_length":4
    },
    {
-      "name":["Temp 1","Temp 2","Temp 3","Temp 4"],
+      "name":["Slice 1 :: Temp 1","Slice 1 :: Temp 2"],
       "address":8,
-      "unit":["C","C","C","C"],
-      "form":["byte","byte","byte","byte"],
-      "req_msg":[1,2,3,4],
-      "delay":[0.3,0.3,0.3,0.3],
-      "read_length":[4,4,4,4]
+      "unit":["C","C"],
+      "form":["byte","byte"],
+      "req_msg":[1,2],
+      "delay":[0.3,0.3],
+      "read_length":[4,4]
    }
 ],
 "CONTROLS":[
    {
-      "name":"Relay Heating Element",
+      "name":"Heating Element 1",
       "address":13,
       "unit":"",
       "form":"byte",
@@ -31,9 +31,14 @@
       "read_length":4,
       "enabled":false,
       "params":[{
-         "Target":0,
-         "Ramprate":0,
-         "control":"control.BREADheat"
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0,
+         "ki":0,
+         "kd":0,
+         "er":0,
+         "control":"control.BREADheaterPID"
       }
    ],
       "def_state":false

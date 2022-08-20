@@ -15,10 +15,12 @@ import threading
 import traceback
 from flask import Flask, render_template, request
 from sensor import sensor
-from sensor.model.model import Sensor,SensorReading,Control,ControlReading,SensorData
+from sensor.model.model import Sensor,SensorReading,Control,ControlReading,systemSettings,Data
 from sensor.device_detect import connected as ct
 from experiments.experiments import experiment
 app = Flask(__name__)
+database=Data()       #init database class
+
 
 dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -146,10 +148,9 @@ def experimentThread(cycle_length,dev,con):
         for i in range(len(con)):
             #print('Reading :: {}'.format(c.name))
             c=con[i]
-            I2C=I2C_con[i]
             try:
                 m=feedbackModules[c.name]
-                cfb=m.feedback(c.name,I2C)
+                cfb=m.feedback(c.name,c)
                 if c.enabled:
                     out=cfb.process()
                     c.controlMessage(out,cfb.outputType)
@@ -174,6 +175,7 @@ def experimentThread(cycle_length,dev,con):
             cycle_length=cycle_length+abs(newTime)                             #update passed on cycle length as cycle isn't long enough for readings 
             print("Experiment Cycle too short. Extended to :: {}".format(cycle_length))
         activeRead=False    
+        database.cycleSet(cycle_length)
         threadHandle=threading.Timer(newTime,experimentThread,(cycle_length,dev,con))
         threadHandle.daemon=True
         threadHandle.start()
@@ -240,13 +242,17 @@ for con in Control.select():
 print(feedbackModules)
 print('Detected Feedback Modules :: {}'.format(feedbackModules))
 print("Loaded app.py")
-Data=SensorData()       #init database class
+
 activeRead=False
 threadHandle=threading.Thread()
 dataLock=threading.Lock()
+if systemSettings.select().where(systemSettings.cycleLength).order_by(systemSettings.id.desc()).exists():
+    THREAD_TIME=systemSettings.select().where(systemSettings.cycleLength).order_by(systemSettings.id.desc()).get().cycleLength
+else:
+    THREAD_TIME=30
+    database.cycleSet(THREAD_TIME)
 
 
-THREAD_TIME=30
 
 try:                                                                        #Checks if thread is running, may not actually do anything
     experimentThreadStop()

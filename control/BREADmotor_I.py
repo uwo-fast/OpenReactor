@@ -2,7 +2,7 @@ from sensor import sensor
 import time 
 import datetime
 import struct
-from sensor.model.model import Sensor,SensorReading,Control,ControlReading,SensorData
+from sensor.model.model import Sensor,SensorReading,Control,ControlReading,Data
 
 #the motor ID, just used as first byte
 

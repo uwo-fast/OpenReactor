@@ -81,7 +81,7 @@ class I2C:
         self.enabled=enabled
         self.params=params
         self.def_state=def_state
-        self.db = model.SensorData()
+        self.db = model.Data()
         self.def_params=params
         if params==-1:
             self.db.define_sensor(name, units)

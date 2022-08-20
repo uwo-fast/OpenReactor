@@ -55,7 +55,14 @@ class ControlReading(Model):
     class Meta:
         database = db
 
-class SensorData(object):
+
+class systemSettings(Model):
+    cycleLength=FloatField()
+
+    class Meta:
+        database = db
+
+class Data(object):
     """
     Main data access layer class which provides functions to query DHT sensor
     and sensor reading data from the database.
@@ -64,7 +71,11 @@ class SensorData(object):
     def __init__(self):
         """Initialize access to the DHT sensor reading database."""
         db.connect(reuse_if_open=True)
-        db.create_tables([Sensor, SensorReading,Control,ControlReading], safe=True)
+        db.create_tables([Sensor, SensorReading,Control,ControlReading,systemSettings], safe=True)
+
+    def cycleSet(self,len):
+        systemSettings.get_or_create(cycleLength=len)
+
 
     def define_sensor(self, name, units):
         """Define the specified sensor and add it to the database.  If a sensor
