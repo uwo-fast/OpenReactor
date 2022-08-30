@@ -17,12 +17,13 @@ class feedback:
 
     def getData(self):
         #data=SensorReading.select().where(SensorReading.name=='Adafruit Temperature Sensor').order_by(SensorReading.time)[-1].value
-        self.getParams
+        self.getParams()
         p=list(self.params)
+        print("Params :: {}".format(p))
         del p[-1]
         self.params["input"]=SensorReading.select().where(SensorReading.name=="Slice 1 :: Temp 1").order_by(SensorReading.id.desc()).get().value
         self.params["lastInput"]=SensorReading.select().where(SensorReading.name=="Slice 1 :: Temp 1").order_by(SensorReading.id.desc()).limit(2)[-1].value
-        data,self.params["er"]=PID(self.params["input"],self.params["lastInput"],self.params["setpoint"],self.params["kp"],self.params["ki"].self.params["kd"],er=self.params["er"])
+        data,self.params["er"]=PID(float(self.params["input"]),float(self.params["lastInput"]),float(self.params["setpoint"]),float(self.params["kp"]),float(self.params["ki"]),float(self.params["kd"]),er=float(self.params["er"]))
         self.data=data
 
     def getParams(self):

@@ -2,20 +2,11 @@
 {
 "DEVICES":[
    {
-      "name":"Heater Thermocouple",
-      "address":13,
-      "unit":"C",
-      "form":"byte",
-      "req_msg":[],
-      "delay":0.0,
-      "read_length":4
-   },
-   {
       "name":["Slice 1 :: Temp 1","Slice 1 :: Temp 2"],
-      "address":8,
+      "address":20,
       "unit":["C","C"],
       "form":["byte","byte"],
-      "req_msg":[1,2],
+      "req_msg":[[84,1],[84,2]],
       "delay":[0.3,0.3],
       "read_length":[4,4]
    }
@@ -23,7 +14,7 @@
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":13,
+      "address":20,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -42,25 +33,6 @@
       }
    ],
       "def_state":false
-   },
-    {
-      "name":["Motor 1","Motor 2"],
-      "address":6,
-      "unit":["",""],
-      "form":["byte","byte"],
-      "req_msg":[[],[]],
-      "delay":[0.0,0.0],
-      "read_length":[4,4],
-      "enabled":[false,false],
-      "params":[{
-         "speed":0,
-         "control":"control.BREADmotor_I"
-       },
-       {
-         "speed":0,
-         "control":"control.BREADmotor_II"
-       }],
-       "def_state":[false,false]
-    }
+   }
 ]
 }

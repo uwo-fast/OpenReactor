@@ -57,9 +57,9 @@ def innit_control():
     I2C_con=[]
     for dev in connected.cons:
         global feedbackModules
-        #print(dev[8])
-        feedbackModules[dev[1]]=importlib.import_module(dev[8]["control"])
-        con=sensor.I2C(name=dev[1],units=dev[2],address=dev[0],form=dev[3],request_message=dev[4],delay=dev[5],read_length=dev[6],enabled=dev[7],params=dev[8],def_state=dev[9])
+        print(dev[1])
+        feedbackModules[dev[1]]=importlib.import_module(dev[8][0]["control"])
+        con=sensor.I2C(name=dev[1],units=dev[2],address=dev[0],form=dev[3],request_message=dev[4],delay=dev[5],read_length=dev[6],enabled=dev[7],params=dev[8][0],def_state=dev[9])
         I2C_con.append(con)
         con.reset_control()
         if not ControlReading.select().where(ControlReading.name==con.name):

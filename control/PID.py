@@ -1,9 +1,3 @@
-from sensor import sensor
-import time 
-import datetime
-import struct
-from sensor.model.model import Sensor,SensorReading,Control,ControlReading,SensorData
-
 def PID(input,lastInput,setpoint,kp,ki,kd,er=0):
     e=setpoint-input
     er+=e

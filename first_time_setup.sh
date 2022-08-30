@@ -9,7 +9,7 @@ git submodule update --init --recursive
 # Install needed dependancies
 sudo apt update; sudo apt upgrade -y
 sudo apt install -y python3-venv sqlite3 npm
-sudo apt install libpq-dev python-dev
+sudo apt install libpq-dev python3-dev
 sudo apt install build-essential
 sudo apt install postgresql-server-dev-all
 
