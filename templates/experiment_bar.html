@@ -419,7 +419,7 @@ function getSelected(){
                         var hidElem = document.createElement('a')
                         hidElem.href='data:text/csv;charset=utf-8,'+encodeURI(csvString)
                         hidElem.target='_blank';
-                        hidElem.download='test.csv'
+                        hidElem.download=selected+'.csv'
                         hidElem.click()
                     }
                 });
