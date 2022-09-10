@@ -1,3 +1,4 @@
+from tokenize import String
 import busio
 from .model import model
 from .model.model import Sensor,SensorReading
@@ -102,6 +103,8 @@ class I2C:
             toWrite=self.req_msg
         else:
             toWrite=[self.req_msg]
+        if type(toWrite[0]) is str:
+            toWrite[0]=bytes(toWrite[0].encode())
         if len(toWrite) !=0:
             i2c.writeto(self.addr,bytes(toWrite),stop=False)
         result=bytearray(self.read_len)
