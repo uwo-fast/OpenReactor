@@ -3,7 +3,7 @@
 "DEVICES":[
    {
       "name":["Slice 1 :: Temp 1","Slice 1 :: Temp 2"],
-      "address":20,
+      "address":17,
       "unit":["C","C"],
       "form":["byte","byte"],
       "req_msg":[[84,1],[84,2]],
@@ -14,7 +14,7 @@
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":20,
+      "address":17,
       "unit":"",
       "form":"byte",
       "req_msg":[],
