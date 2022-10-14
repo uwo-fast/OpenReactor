@@ -15,6 +15,7 @@ sudo apt install postgresql-server-dev-all
 
 # Create and configure python virtual enviroment
 python3 -m venv .venv
+sudo chmod -R a+rwx .venv
 source .venv/bin/activate
 pip install wheel
 pip install --upgrade wheel
