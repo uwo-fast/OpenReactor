@@ -2,19 +2,46 @@
 {
 "DEVICES":[
    {
-      "name":["Slice 1 :: Temp 1","Slice 1 :: Temp 2"],
-      "address":17,
-      "unit":["C","C"],
-      "form":["byte","byte"],
-      "req_msg":[[84,1],[84,2]],
-      "delay":[0.3,0.3],
-      "read_length":[4,4]
+      "name":"Thermo 1",
+      "address":15,
+      "unit":"C",
+      "form":"byte",
+      "req_msg":[84,1],
+      "delay":0.3,
+      "read_length":4
+   },
+      {
+      "name":"Thermo 2",
+      "address":18,
+      "unit":"C",
+      "form":"byte",
+      "req_msg":[84,1],
+      "delay":0.3,
+      "read_length":4
+   },
+   {
+      "name":"Thermo 3",
+      "address":14,
+      "unit":"C",
+      "form":"byte",
+      "req_msg":[84,1],
+      "delay":0.3,
+      "read_length":4
+   },
+   {
+      "name":"Thermo 4",
+      "address":16,
+      "unit":"C",
+      "form":"byte",
+      "req_msg":[84,1],
+      "delay":0.3,
+      "read_length":4
    }
 ],
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":17,
+      "address":15,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -25,10 +52,80 @@
          "input":0,
          "lastInput":0,
          "setpoint":0,
-         "kp":0,
-         "ki":0,
-         "kd":0,
+         "kp":0.1,
+         "ki":0.03,
+         "kd":0.03,
          "er":0,
+         "thermocouple":1,
+         "control":"control.BREADheaterPID"
+      }
+   ],
+      "def_state":false
+   },
+      {
+      "name":"Heating Element 2",
+      "address":18,
+      "unit":"",
+      "form":"byte",
+      "req_msg":[],
+      "delay":0.0,
+      "read_length":4,
+      "enabled":false,
+      "params":[{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.1,
+         "ki":0.03,
+         "kd":0.03,
+         "er":0,
+         "thermocouple":2,
+         "control":"control.BREADheaterPID"
+      }
+   ],
+      "def_state":false
+   },
+   {
+      "name":"Heating Element 3",
+      "address":14,
+      "unit":"",
+      "form":"byte",
+      "req_msg":[],
+      "delay":0.0,
+      "read_length":4,
+      "enabled":false,
+      "params":[{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.1,
+         "ki":0.03,
+         "kd":0.03,
+         "er":0,
+         "thermocouple":3,
+         "control":"control.BREADheaterPID"
+      }
+   ],
+      "def_state":false
+   },
+   {
+      "name":"Heating Element 4",
+      "address":16,
+      "unit":"",
+      "form":"byte",
+      "req_msg":[],
+      "delay":0.0,
+      "read_length":4,
+      "enabled":false,
+      "params":[{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.1,
+         "ki":0.03,
+         "kd":0.03,
+         "er":0.03,
+         "thermocouple":4,
          "control":"control.BREADheaterPID"
       }
    ],

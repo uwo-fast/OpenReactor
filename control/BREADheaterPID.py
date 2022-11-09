@@ -21,8 +21,8 @@ class feedback:
         p=list(self.params)
         print("Params :: {}".format(p))
         del p[-1]
-        self.params["input"]=SensorReading.select().where(SensorReading.name=="Slice 1 :: Temp 1").order_by(SensorReading.id.desc()).get().value
-        self.params["lastInput"]=SensorReading.select().where(SensorReading.name=="Slice 1 :: Temp 1").order_by(SensorReading.id.desc()).limit(2)[-1].value
+        self.params["input"]=SensorReading.select().where(SensorReading.name=="Thermo "+ str(self.params["thermocouple"])).order_by(SensorReading.id.desc()).get().value
+        self.params["lastInput"]=SensorReading.select().where(SensorReading.name=="Thermo " +str(self.params["thermocouple"])).order_by(SensorReading.id.desc()).limit(2)[-1].value
         data,self.params["er"]=PID(float(self.params["input"]),float(self.params["lastInput"]),float(self.params["setpoint"]),float(self.params["kp"]),float(self.params["ki"]),float(self.params["kd"]),er=float(self.params["er"]))
         self.data=data
 
