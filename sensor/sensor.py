@@ -106,7 +106,7 @@ class I2C:
         if type(toWrite[0]) is str:
             toWrite[0]=[ord(i) for i in toWrite[0]]
         if len(toWrite) !=0:
-            i2c.writeto(self.addr,bytes(toWrite),stop=False)
+            i2c.writeto(self.addr,bytearray(toWrite),stop=False)
         result=bytearray(self.read_len)
         time.sleep(self.delay)
         i2c.readfrom_into(self.addr,result)
