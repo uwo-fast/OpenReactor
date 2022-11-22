@@ -215,7 +215,8 @@ function getSelected(){
 
     function start_experiment(){
         filename=document.getElementById("selectExp").value
-        name=filename//.substring(0,filename.length-5)
+        //name=filename//.substring(0,filename.length-5)
+        name=filename.substring(0,filename.length)
         $.ajax({
             url:'update/experiments/start/'+name,
             type:'post',
