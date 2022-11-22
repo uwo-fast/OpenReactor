@@ -44,7 +44,7 @@ class feedback:
         self.params=params
 
     def params2data(self):
-      if self.params["input"]-self.params["setpoint"]<0: #if the solution is below target pH, want to add base so use output byte for base pump
+      if float(self.params["input"])-float(self.params["setpoint"])<0: #if the solution is below target pH, want to add base so use output byte for base pump
         self.identifier=self.baseID
         self.params['Acid Pump']=0
         self.params['Base Pump']=self.data
