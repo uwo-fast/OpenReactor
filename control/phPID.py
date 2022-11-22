@@ -64,6 +64,7 @@ class feedback:
         output=self.data
         return output
     def reset(self):
+        self.resetPumps()
         default=ControlReading.select().where(ControlReading.name==self.name).order_by(ControlReading.time.asc()).get().params
         id=struct.pack(self.outputType,self.identifier)
         p=struct.pack(self.outputType,int(0))
