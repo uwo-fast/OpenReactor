@@ -435,7 +435,7 @@ function getSelected(){
 
 
     $("#startExp").click(function(){start_experiment();setTimeout(getInfo(),500)})
-    $("#stopExp").click(function(){stop_experiment();setTimeout(getInfo(),500)})
+    $("#stopExp").click(function(){setTimeout(stop_experiment(),500);setTimeout(getInfo(),500)})
 </script>
 <div class="container" id="cont">
 {% block body %}
