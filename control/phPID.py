@@ -24,7 +24,7 @@ class feedback:
         p=struct.pack(self.outputType,0)
         self.I2C.controlMessage(id+p)
         self.I2C.write()
-        id=struct.pack(self.outputType,self.baseID)
+        id=struct.pack(self.outputType,self.acidID)
         self.I2C.controlMessage(id+p)
         self.I2C.write()
 
