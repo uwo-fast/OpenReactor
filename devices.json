@@ -10,22 +10,22 @@
       "read_length":4
    },
    {
-      "name":["pH","Cal Mid","Cal Low","Cal High"],
+      "name":["pH","Cal Mid","Cal Low","Cal High","Clear pH Cal"],
       "address":99,
-      "unit":["pH","","",""],
-      "form":["Atlas","Atlas","Atlas","Atlas"],
-      "req_msg":[82,"cal,mid,7","cal,low,4","cal,high,10"],
-      "delay":[0.9,0.9,0.9,0.9],
-      "read_length":[31,31,31,31]
+      "unit":["pH","","","",""],
+      "form":["Atlas","Atlas","Atlas","Atlas","Atlas"],
+      "req_msg":[82,"cal,mid,7.0","cal,low,4.0","cal,high,10.0","cal,clear"],
+      "delay":[0.9,0.9,0.9,0.9,0.9],
+      "read_length":[31,31,31,31,31]
    },
    {
-      "name":["Dissolved Oxygen", "Air Cal", "DO Cal"],
+      "name":["Dissolved Oxygen", "Air Cal", "DO Cal", "Clear DO Cal"],
       "address":97,
-      "unit":["% Oxygen","",""],
-      "form":["Atlas","Atlas","Atlas"],
-      "req_msg":[82,"cal","cal,0"],
-      "delay":[0.6,1.3,1.3],
-      "read_length":[31,31,31]
+      "unit":["% Oxygen","","",""],
+      "form":["Atlas","Atlas","Atlas","Atlas"],
+      "req_msg":[82,"cal","cal,0","cal,clear"],
+      "delay":[0.6,1.3,1.3,1.3],
+      "read_length":[31,31,31,31]
    },
    {
       "name":"Unknown",
@@ -61,10 +61,47 @@
    ],
       "def_state":false
    },
-
    {
       "name":["Stirring","Pump 1"],
       "address":1,
+      "unit":["",""],
+      "form":["byte","byte"],
+      "req_msg":[[],[]],
+      "delay":[0.0,0.0],
+      "read_length":[4,4],
+      "enabled":[false,false],
+      "params":[[{
+         "speed":0,
+         "control":"control.BREADmotor_I"
+       }],
+       [{
+         "speed":0,
+         "control":"control.BREADmotor_II"
+       }]],
+       "def_state":[false,false]
+    },
+   {
+      "name":["Base Control","Acid Control"],
+      "address":2,
+      "unit":["",""],
+      "form":["byte","byte"],
+      "req_msg":[[],[]],
+      "delay":[0.0,0.0],
+      "read_length":[4,4],
+      "enabled":[false,false],
+      "params":[[{
+         "speed":0,
+         "control":"control.BREADmotor_I"
+       }],
+       [{
+         "speed":0,
+         "control":"control.BREADmotor_II"
+       }]],
+       "def_state":[false,false]
+    },
+   {
+      "name":["Base Pump","Acid Pump"],
+      "address":2,
       "unit":["",""],
       "form":["byte","byte"],
       "req_msg":[[],[]],
