@@ -7,7 +7,8 @@
       "form":"byte",
       "req_msg":[84,1],
       "delay":0.3,
-      "read_length":4
+      "read_length":4,
+      "auto":true
    },
    {
       "name":["pH","Cal Mid","Cal Low","Cal High","Clear pH Cal"],
@@ -16,16 +17,20 @@
       "form":["Atlas","Atlas","Atlas","Atlas","Atlas"],
       "req_msg":[82,"cal,mid,7.0","cal,low,4.0","cal,high,10.0","cal,clear"],
       "delay":[0.9,0.9,0.9,0.9,0.9],
-      "read_length":[31,31,31,31,31]
+      "read_length":[31,31,31,31,31],
+      "auto":[true,false,false,false,false]
    },
    {
       "name":["Dissolved Oxygen", "Air Cal", "DO Cal", "Clear DO Cal"],
       "address":97,
+
       "unit":["% Oxygen","","",""],
       "form":["Atlas","Atlas","Atlas","Atlas"],
       "req_msg":[82,"cal","cal,0","cal,clear"],
       "delay":[0.6,1.3,1.3,1.3],
-      "read_length":[31,31,31,31]
+      "read_length":[31,31,31,31],
+      "auto":[true,false,false,false]
+
    },
    {
       "name":"Unknown",
@@ -34,7 +39,8 @@
       "form":"byte",
       "req_msg":0,
       "delay":0,
-      "read_length":0
+      "read_length":0,
+      "auto":false
    }
 ],
 "CONTROLS":[

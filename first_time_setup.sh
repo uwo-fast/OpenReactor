@@ -20,8 +20,9 @@ source .venv/bin/activate
 pip install wheel
 pip install --upgrade wheel
 pip install --upgrade setuptools
+sudo chmod -R 777 ./
 pip install -r requirements.txt
-
+pip3 install --upgrade adafruit-blinka adafruit-platformdetect
 # Install NPM packages
 cd static
 npm i 

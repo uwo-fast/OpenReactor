@@ -32,7 +32,7 @@ class Sensor(Model):
 class SensorReading(Model):
     time = DateTimeField()
     name = CharField()
-    value = FloatField()
+    value = FloatField(null=True)
 
     class Meta:
         database = db

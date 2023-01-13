@@ -6,9 +6,10 @@ import time
 import datetime
 import random
 import struct
+import numpy as np
 from board import SCL, SDA
 from .sensor_format import form
-
+import peewee
 #def form(form,data):
 #    """
 #    contains the formatting for raw measurements
@@ -50,7 +51,7 @@ class I2C:
     """
     Class used to define I2C devices connected to the system, contains methods for measurement and database interfacing
     """
-    def __init__(self, name, units,form="atlas", address=99, request_message=0x52, delay=0.9, read_length=31,enabled=-1,params=-1,def_state=False):
+    def __init__(self, name, units,form="atlas", address=99, request_message=0x52, delay=0.9, read_length=31,enabled=-1,params=-1,def_state=False,auto=True):
         """
         contains all essential information for communication with the device, defaults to atlas pH sensor
         Parameters
@@ -84,6 +85,7 @@ class I2C:
         self.def_state=def_state
         self.db = model.Data()
         self.def_params=params
+        self.auto=auto
         if params==-1:
             self.db.define_sensor(name, units)
         elif params!=-1:
@@ -143,13 +145,30 @@ class I2C:
      
     def readEmpty(self):
         """Reads a value of -1 as a measurement, used for init of sensor to avoid issues"""
-        self.value=-1
+        self.value=0
         self.time = datetime.datetime.now()
+        self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
 
     def store(self):
         """Stores the value of the latest sensor reading into the database."""
         if self.params==-1:
+            if self.value==None:
+                return
+            print("value: {} Type: {}".format(self.value,type(self.value)))
+            print(float(self.value))
+            maxReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.desc()).get().value
+            minReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.asc()).get().value
+            extreme=np.max([np.float32(maxReading),abs(np.float32(minReading))])
+            if extreme==float(0):
+                print("zero value")
+                self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
+                return
+            elif float(self.value)>extreme*20:
+                print("Outlier, not saving min:{} max:{} value: {}".format(minReading,maxReading,self.value))
+                return
+
             self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
+
         elif self.params!=-1:
             self.db.add_control_status(time=self.time, name='{0}'.format(self.name), value=self.value,enabled=self.enabled,params=self.params)
 

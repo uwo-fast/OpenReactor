@@ -35,7 +35,7 @@ def innit_connected():
     connected=ct()
     I2C_dev=[]
     for sen in connected.devs:
-        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0],form=sen[3],request_message=sen[4],delay=sen[5],read_length=sen[6])      #creates I2C object for each detected sensor
+        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0],form=sen[3],request_message=sen[4],delay=sen[5],read_length=sen[6],auto=sen[7])      #creates I2C object for each detected sensor
         I2C_dev.append(dev)
         if not SensorReading.select().where(SensorReading.name==dev.name):      #if this sensor hasn't been used before creates an 'empty' reading of -1 that creates an entry but isn't parsed
             print("Missing :: {}".format(dev.name))
@@ -135,8 +135,9 @@ def experimentThread(cycle_length,dev,con):
         for d in dev:
             #print('Reading :: {}'.format(d.name))
             try:
-                d.read()
-                d.store()
+                if d.auto:
+                    d.read()
+                    d.store()
             except:
                 print("Error with Read of Sensor :: {}\n".format(d.name))
                 print(Exception)

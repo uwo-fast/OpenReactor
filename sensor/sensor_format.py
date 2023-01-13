@@ -26,7 +26,7 @@ def form(form,data):
 
     elif form=="atlas":
         result=list(map(lambda x: chr(x & ~0x80),list(data)))
-        result=result[1:6]
+        result=result[1:5]
         result="".join(map(str,result))
 
     elif form=="byte":
