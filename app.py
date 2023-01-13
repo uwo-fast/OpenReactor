@@ -4,7 +4,7 @@ export FLASK_APP=app
 export FLASK_ENV=development
 flask run
 """
-from datetime import datetime
+from datetime import datetime,timedelta
 from inspect import trace
 import json
 import flask
@@ -332,10 +332,12 @@ def graphsUpdate(toDisplay,selected):
         dataData=[]
         exp=experiment('./experiments')     #init experiment 
         sen,timeStart,timeEnd,running=exp.info(selected)        #gets the information for the given experiment 
-        if timeEnd==-1:     #if the experiment hasn't ended, either still running or hasn't been started. Use current time. 
-            timeEnd=datetime.fromtimestamp(time.time()).timestamp()
         if timeStart==-1:     #if the experiment hasn't ended, either still running or hasn't been started. Use current time. 
             timeStart=datetime.fromtimestamp(time.time()).timestamp()
+        if timeEnd==-1:     #if the experiment hasn't ended, either still running or hasn't been started. Use current time. 
+            timeEnd=datetime.fromtimestamp(time.time()).timestamp()
+            if timeEnd-timeStart>3600:
+                timeStart=(datetime.fromtimestamp(time.time())-timedelta(hours=1)).timestamp()
         sen,dataData,dataTime=experiment_entries(timeStart,timeEnd,toDisplay)       #returns the data measurements during time interval 
         values1 = dataData
         time1=dataTime
