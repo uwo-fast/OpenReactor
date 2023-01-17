@@ -18,6 +18,7 @@ from sensor import sensor
 from sensor.model.model import Sensor,SensorReading,Control,ControlReading,systemSettings,Data
 from sensor.device_detect import connected as ct
 from experiments.experiments import experiment
+from maths.symbolicParser import var,parse
 app = Flask(__name__)
 database=Data()       #init database class
 
@@ -34,6 +35,9 @@ def innit_connected():
     """
     connected=ct()
     I2C_dev=[]
+
+    equations=open(dir+'maths/equations',)    
+
     for sen in connected.devs:
         dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0],form=sen[3],request_message=sen[4],delay=sen[5],read_length=sen[6],auto=sen[7])      #creates I2C object for each detected sensor
         I2C_dev.append(dev)
