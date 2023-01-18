@@ -2,6 +2,7 @@ from tokenize import String
 import busio
 from .model import model
 from .model.model import Sensor,SensorReading
+from ..maths.symbolicParser import var,parse
 import time
 import datetime
 import random
@@ -149,13 +150,17 @@ class I2C:
         self.time = datetime.datetime.now()
         self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
 
-    def store(self):
+    def store(self,equation="1x+0"):
         """Stores the value of the latest sensor reading into the database."""
-        if self.params==-1:
+        if self.params==-1: #if sensor
             if self.value==None:
                 return
             print("value: {} Type: {}".format(self.value,type(self.value)))
-            print(float(self.value))
+            
+            eq=parse(equation)
+            self.value=eq.apply(self.value)
+            print("Applying equation {} :: {}".format(eq.equation(),self.value))
+
             maxReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.desc()).get().value
             minReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.asc()).get().value
             extreme=np.max([np.float32(maxReading),abs(np.float32(minReading))])

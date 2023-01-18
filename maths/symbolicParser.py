@@ -188,7 +188,7 @@ def clearBrackets(eq):
 
 
 
-def parse(string):
+def parse(string) -> var:
     string=string.lower()
 
     b=re.sub(r"(?<=[1-9])[\(]","*(",string) # replace implicit mult brackets
