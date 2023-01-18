@@ -75,6 +75,9 @@ def mathSolve(eq):
                 eq[v-1]=an
             elif eq[v-1]==")":
                 eq=handleBrackets(eq,v,reverse=True)
+            elif eq[v+1]=="(":
+                eq=handleBrackets(eq,v,reverse=False)
+
     while eq.count("+")>0:
         iMult=(i for i,v in enumerate(eq) if v == '+')
         for v in iMult:
