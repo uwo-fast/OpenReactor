@@ -98,16 +98,15 @@ def mathSolve(eq):
     return eq
 
 def genEq(val1,symbol,val2):
-    match symbol:
-        case "*":
+        if symbol == "*":
             ans=val1*val2
-        case "/":
+        elif symbol ==  "/":
             ans=val1/val2
-        case "+":
+        elif symbol ==  "+":
             ans=val1+val2
-        case "-":
+        elif symbol ==  "-":
             ans=val1-val2
-    return ans
+        return ans
 
 def handleBrackets(eq,v,reverse=False):
     if not reverse:

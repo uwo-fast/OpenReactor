@@ -2,7 +2,7 @@ from tokenize import String
 import busio
 from .model import model
 from .model.model import Sensor,SensorReading
-from ..maths.symbolicParser import var,parse
+from .maths.symbolicParser import var,parse
 import time
 import datetime
 import random
@@ -158,7 +158,7 @@ class I2C:
             print("value: {} Type: {}".format(self.value,type(self.value)))
             
             eq=parse(equation)
-            self.value=eq.apply(self.value)
+            self.value=str(eq.apply(float(self.value)))
             print("Applying equation {} :: {}".format(eq.equation(),self.value))
 
             maxReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.desc()).get().value

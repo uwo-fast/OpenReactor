@@ -19,7 +19,7 @@ from sensor import sensor
 from sensor.model.model import Sensor,SensorReading,Control,ControlReading,systemSettings,Data
 from sensor.device_detect import connected as ct
 from experiments.experiments import experiment
-from maths.symbolicParser import var,parse
+from sensor.maths.symbolicParser import var,parse
 app = Flask(__name__)
 database=Data()       #init database class
 
@@ -38,7 +38,7 @@ def innit_connected():
     I2C_dev=[]
 
 
-    equations=Path(dir+"/maths/equations.json")
+    equations=Path(dir+"/sensor/maths/equations.json")
     equations.touch(exist_ok=True)
     f = open(equations)
     try:
@@ -47,7 +47,7 @@ def innit_connected():
         f.close()
         j={}
     f.close()
-    f = open(equations,'w')    
+      
     print(j)
 
     for sen in connected.devs:
@@ -62,6 +62,7 @@ def innit_connected():
         if not dev.name in j:
             print("Creating Default Equation for {}".format(dev.name))
             j[dev.name]='1x+0'
+        f = open(equations,'w')          
         json.dump(j,f)
         f.close()
     return I2C_dev,j
@@ -432,7 +433,7 @@ def controls():
     enabled = []
     controls_values=[]
     pars = []
-    print(Control.select()[0].name)
+
     for dev in Sensor.select():     #for sensors in database
         sensors.append(dev.name)
         print("Name:{}".format(dev.name))
@@ -482,6 +483,18 @@ def updateControls():
             par=ControlReading.select().where(ControlReading.name==con.name).order_by(ControlReading.id.desc()).get().params
             pars.append(par)
         return json.dumps({'sen':sensors,'val':values,'con':controls,'en':enabled,'con_val':controls_values,'par':pars})
+
+@app.route("/controls/calibrate",methods=['POST','GET'])
+def calibrate():
+    if request.method=='POST':
+        req=request.json
+        print(req)
+        equations[req[0]]=req[1]
+        eq=Path(dir+"/sensor/maths/equations.json")
+        f = open(eq,'w')          
+        json.dump(equations,f)
+        f.close()
+    return ('',204)
 
 @app.route("/controls/reset",methods=['POST'])
 def resetControls():
