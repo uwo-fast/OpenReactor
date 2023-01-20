@@ -148,7 +148,9 @@ function getSelected(){
 
     function getElapsedTime(startTime,timeCurrent){
         function toTwo(st){
-            return ('00'+st).slice(String(st).length)
+            if(st>99){return st}
+            else{
+            return ('00'+st).slice(String(st).length)}
         }
         //timeCurrent = new Date().getTime()
         e=(timeCurrent)-(startTime*1000)
