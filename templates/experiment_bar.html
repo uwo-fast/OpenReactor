@@ -148,7 +148,7 @@ function getSelected(){
 
     function getElapsedTime(startTime,timeCurrent){
         function toTwo(st){
-            if(st>99){return st}
+            if(st>99){return String(st)}
             else{
             return ('00'+st).slice(String(st).length)}
         }
