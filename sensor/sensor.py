@@ -7,7 +7,6 @@ import time
 import datetime
 import random
 import struct
-import numpy as np
 from board import SCL, SDA
 from .sensor_format import form
 import peewee
@@ -160,17 +159,6 @@ class I2C:
             eq=parse(equation)
             self.value=str(eq.apply(float(self.value)))
             print("Applying equation {} :: {}".format(eq.equation(),self.value))
-
-            maxReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.desc()).get().value
-            minReading=SensorReading.select().where(SensorReading.name=='{0}'.format(self.name)).order_by(SensorReading.value.asc()).get().value
-            extreme=np.max([np.float32(maxReading),abs(np.float32(minReading))])
-            if extreme==float(0):
-                print("zero value")
-                self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
-                return
-            elif float(self.value)>extreme*20:
-                print("Outlier, not saving min:{} max:{} value: {}".format(minReading,maxReading,self.value))
-                return
 
             self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
 
