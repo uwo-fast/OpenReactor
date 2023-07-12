@@ -2,7 +2,7 @@
 "DEVICES":[
    {
       "name":"Thermo 1",
-      "address":7,
+      "address":1,
       "unit":"C",
       "form":"byte",
       "req_msg":[84,1],
@@ -23,7 +23,6 @@
    {
       "name":["Dissolved Oxygen", "Air Cal", "DO Cal", "Clear DO Cal"],
       "address":97,
-
       "unit":["% Oxygen","","",""],
       "form":["Atlas","Atlas","Atlas","Atlas"],
       "req_msg":[82,"cal","cal,0","cal,clear"],
@@ -31,22 +30,12 @@
       "read_length":[31,31,31,31],
       "auto":[true,false,false,false]
 
-   },
-   {
-      "name":"Unknown",
-      "address":127,
-      "unit":"",
-      "form":"byte",
-      "req_msg":0,
-      "delay":0,
-      "read_length":0,
-      "auto":false
    }
 ],
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":7,
+      "address":1,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -68,8 +57,8 @@
       "def_state":false
    },
    {
-      "name":["Stirring","Pump 1"],
-      "address":1,
+      "name":["Pump 1","Stirring"],
+      "address":2,
       "unit":["",""],
       "form":["byte","byte"],
       "req_msg":[[],[]],
@@ -88,7 +77,7 @@
     },
    {
       "name":["Base Control","Acid Control"],
-      "address":2,
+      "address":3,
       "unit":["",""],
       "form":["byte","byte"],
       "req_msg":[[],[]],
@@ -107,7 +96,7 @@
     },
    {
       "name":["Base Pump","Acid Pump"],
-      "address":2,
+      "address":3,
       "unit":["",""],
       "form":["byte","byte"],
       "req_msg":[[],[]],
@@ -126,7 +115,7 @@
     },
     {
       "name":"pH Control",
-      "address":2,
+      "address":3,
       "unit":"",
       "form":"byte",
       "req_msg":[],
