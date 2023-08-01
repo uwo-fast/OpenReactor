@@ -1,52 +1,178 @@
 {
 "DEVICES":[
    {
-      "name":"Thermo 1",
-      "address":7,
-      "unit":"C",
-      "form":"byte",
-      "req_msg":[84,1],
-      "delay":0.3,
-      "read_length":4,
-      "auto":true
+      "name":["Thermo 1", "Thermo 2", "Thermo 3"],
+      "address":1,
+      "unit":["C","C","C"],
+      "form":["byte","byte","byte"],
+      "req_msg":[[84,1],[84,2],[84,3]],
+      "delay":[0.3,0.3,0.3],
+      "read_length":[4,4,4]
    },
    {
-      "name":["pH","Cal Mid","Cal Low","Cal High","Clear pH Cal"],
-      "address":99,
-      "unit":["pH","","","",""],
-      "form":["Atlas","Atlas","Atlas","Atlas","Atlas"],
-      "req_msg":[82,"cal,mid,7.0","cal,low,4.0","cal,high,10.0","cal,clear"],
-      "delay":[0.9,0.9,0.9,0.9,0.9],
-      "read_length":[31,31,31,31,31],
-      "auto":[true,false,false,false,false]
+      "name":["Thermo 4", "Thermo 5", "Thermo 6"],
+      "address":2,
+      "unit":["C","C","C"],
+      "form":["byte","byte","byte"],
+      "req_msg":[[84,1],[84,2],[84,3]],
+      "delay":[0.3,0.3,0.3],
+      "read_length":[4,4,4]
    },
    {
-      "name":["Dissolved Oxygen", "Air Cal", "DO Cal", "Clear DO Cal"],
-      "address":97,
-
-      "unit":["% Oxygen","","",""],
-      "form":["Atlas","Atlas","Atlas","Atlas"],
-      "req_msg":[82,"cal","cal,0","cal,clear"],
-      "delay":[0.6,1.3,1.3,1.3],
-      "read_length":[31,31,31,31],
-      "auto":[true,false,false,false]
-
+      "name":["Thermo 7", "Thermo 8", "Thermo 9"],
+      "address":3,
+      "unit":["C","C","C"],
+      "form":["byte","byte","byte"],
+      "req_msg":[[84,1],[84,2],[84,3]],
+      "delay":[0.3,0.3,0.3],
+      "read_length":[4,4,4]
    },
    {
-      "name":"Unknown",
-      "address":127,
-      "unit":"",
-      "form":"byte",
-      "req_msg":0,
-      "delay":0,
-      "read_length":0,
-      "auto":false
+      "name":["Thermo 10", "Thermo 11"],
+      "address":4,
+      "unit":["C","C"],
+      "form":["byte","byte"],
+      "req_msg":[[84,1],[84,2]],
+      "delay":[0.3,0.3],
+      "read_length":[4,4]
    }
 ],
 "CONTROLS":[
    {
-      "name":"Heating Element 1",
-      "address":7,
+      "name":["Heating Element 1","Heating Element 2","Heating Element 3"],
+      "address":1,
+      "unit":["","",""],
+      "form":["byte","byte","byte"],
+      "req_msg":[[],[],[]],
+      "delay":[0.0,0.0,0.0],
+      "read_length":[4,4,4],
+      "enabled":[false,false,false],
+      "params":[[{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":1,
+         "control":"control.BREADheaterPID1"
+      }],
+      [{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":2,
+         "control":"control.BREADheaterPID2"
+      }],
+      [{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":3,
+         "control":"control.BREADheaterPID3"
+      }]],
+      "def_state":[false,false,false]
+   },
+   {
+      "name":["Heating Element 4","Heating Element 5","Heating Element 6"],
+      "address":2,
+      "unit":["","",""],
+      "form":["byte","byte","byte"],
+      "req_msg":[[],[],[]],
+      "delay":[0.0,0.0,0.0],
+      "read_length":[4,4,4],
+      "enabled":[false,false,false],
+      "params":[[{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":4,
+         "control":"control.BREADheaterPID1"
+      }],
+      [{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":5,
+         "control":"control.BREADheaterPID2"
+      }],
+      [{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":6,
+         "control":"control.BREADheaterPID3"
+      }]],
+      "def_state":[false,false,false]
+   },
+   {
+      "name":["Heating Element 7","Heating Element 8","Heating Element 9"],
+      "address":3,
+      "unit":["","",""],
+      "form":["byte","byte","byte"],
+      "req_msg":[[],[],[]],
+      "delay":[0.0,0.0,0.0],
+      "read_length":[4,4,4],
+      "enabled":[false,false,false],
+      "params":[[{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":7,
+         "control":"control.BREADheaterPID1"
+      }],
+      [{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":8,
+         "control":"control.BREADheaterPID2"
+      }],
+      [{
+         "input":0,
+         "lastInput":0,
+         "setpoint":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
+         "er":0,
+         "thermocouple":9,
+         "control":"control.BREADheaterPID3"
+      }]],
+      "def_state":[false,false,false]
+   },
+   {
+      "name":"Heating Element 10",
+      "address":4,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -57,76 +183,18 @@
          "input":0,
          "lastInput":0,
          "setpoint":0,
-         "kp":0,
-         "ki":0,
-         "kd":0,
+         "kp":0.0,
+         "ki":0.0,
+         "kd":0.0,
          "er":0,
-         "thermocouple":1,
-         "control":"control.BREADheaterPID"
-      }
-   ],
+         "thermocouple":10,
+         "control":"control.BREADheaterPID1"
+      }],
       "def_state":false
    },
    {
-      "name":["Stirring","Pump 1"],
-      "address":1,
-      "unit":["",""],
-      "form":["byte","byte"],
-      "req_msg":[[],[]],
-      "delay":[0.0,0.0],
-      "read_length":[4,4],
-      "enabled":[false,false],
-      "params":[[{
-         "speed":0,
-         "control":"control.BREADmotor_I"
-       }],
-       [{
-         "speed":0,
-         "control":"control.BREADmotor_II"
-       }]],
-       "def_state":[false,false]
-    },
-   {
-      "name":["Base Control","Acid Control"],
-      "address":2,
-      "unit":["",""],
-      "form":["byte","byte"],
-      "req_msg":[[],[]],
-      "delay":[0.0,0.0],
-      "read_length":[4,4],
-      "enabled":[false,false],
-      "params":[[{
-         "speed":0,
-         "control":"control.BREADmotor_I"
-       }],
-       [{
-         "speed":0,
-         "control":"control.BREADmotor_II"
-       }]],
-       "def_state":[false,false]
-    },
-   {
-      "name":["Base Pump","Acid Pump"],
-      "address":2,
-      "unit":["",""],
-      "form":["byte","byte"],
-      "req_msg":[[],[]],
-      "delay":[0.0,0.0],
-      "read_length":[4,4],
-      "enabled":[false,false],
-      "params":[[{
-         "speed":0,
-         "control":"control.BREADmotor_I"
-       }],
-       [{
-         "speed":0,
-         "control":"control.BREADmotor_II"
-       }]],
-       "def_state":[false,false]
-    },
-    {
-      "name":"pH Control",
-      "address":2,
+      "name":"Stirring Motor",
+      "address":5,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -134,18 +202,9 @@
       "read_length":4,
       "enabled":false,
       "params":[{
-         "input":0,
-         "lastInput":0,
-         "setpoint":0,
-         "kp":0,
-         "ki":0,
-         "kd":0,
-         "er":0,
-         "Base Pump":0,
-         "Acid Pump":0,
-         "control":"control.phPID"
-      }
-   ],
+         "speed":0,
+         "control":"control.BREADmotor_I"
+      }],
       "def_state":false
    }
 ]
