@@ -53,11 +53,11 @@ class connected:
                 if type(dev_name) is list:
                     for i in range(len(dev_name)):
                         try:
-                            self.devs.append((addrs,dev_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i],auto[i]))
+                            self.devs.append((addrs,dev_name[i],unit[i],form[i],req_msg[i],delay[i],read_length[i]))
                         except:
                             raise Exception("\nIssue assigning device information for addresses with more than one device.\n Ensure that in devices.json all arguments except for address are arrays of the same length.") 
                 else:
-                    self.devs.append((addrs,dev_name,unit,form,req_msg,delay,read_length,auto))
+                    self.devs.append((addrs,dev_name,unit,form,req_msg,delay,read_length))
             if con_name:
                 #print("In Loop")
                 form=self.find_con(dev,'form')
