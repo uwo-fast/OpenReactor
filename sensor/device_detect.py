@@ -50,7 +50,6 @@ class connected:
                 req_msg=self.find_dev(dev,'req_msg')
                 delay=self.find_dev(dev,'delay')
                 read_length=self.find_dev(dev,'read_length')
-                auto=self.find_dev(dev,'auto')
                 if type(dev_name) is list:
                     for i in range(len(dev_name)):
                         try:
