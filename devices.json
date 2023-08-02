@@ -7,7 +7,8 @@
       "form":["byte","byte","byte"],
       "req_msg":[[84,1],[84,2],[84,3]],
       "delay":[0.3,0.3,0.3],
-      "read_length":[4,4,4]
+      "read_length":[4,4,4],
+      "auto":[true,true,true]
    },
    {
       "name":["Thermo 4", "Thermo 5", "Thermo 6"],
@@ -16,7 +17,8 @@
       "form":["byte","byte","byte"],
       "req_msg":[[84,1],[84,2],[84,3]],
       "delay":[0.3,0.3,0.3],
-      "read_length":[4,4,4]
+      "read_length":[4,4,4],
+      "auto":[true,true,true]
    },
    {
       "name":["Thermo 7", "Thermo 8", "Thermo 9"],
@@ -34,7 +36,8 @@
       "form":["byte","byte"],
       "req_msg":[[84,1],[84,2]],
       "delay":[0.3,0.3],
-      "read_length":[4,4]
+      "read_length":[4,4],
+      "auto":[true,true]
    }
 ],
 "CONTROLS":[
