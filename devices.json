@@ -27,7 +27,8 @@
       "form":["byte","byte","byte"],
       "req_msg":[[84,1],[84,2],[84,3]],
       "delay":[0.3,0.3,0.3],
-      "read_length":[4,4,4]
+      "read_length":[4,4,4],
+      "auto":[true,true,true]
    },
    {
       "name":["Thermo 10", "Thermo 11"],
