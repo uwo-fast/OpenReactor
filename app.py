@@ -4,7 +4,7 @@ export FLASK_APP=app
 export FLASK_ENV=development
 flask run
 """
-from datetime import datetime
+from datetime import datetime,timedelta
 from inspect import trace
 import json
 import flask
@@ -13,11 +13,13 @@ import os
 import importlib
 import threading
 import traceback
+from pathlib import Path
 from flask import Flask, render_template, request
 from sensor import sensor
 from sensor.model.model import Sensor,SensorReading,Control,ControlReading,systemSettings,Data
 from sensor.device_detect import connected as ct
 from experiments.experiments import experiment
+from sensor.maths.symbolicParser import var,parse
 app = Flask(__name__)
 database=Data()       #init database class
 
@@ -34,15 +36,36 @@ def innit_connected():
     """
     connected=ct()
     I2C_dev=[]
+
+
+    equations=Path(dir+"/sensor/maths/equations.json")
+    equations.touch(exist_ok=True)
+    f = open(equations)
+    try:
+        j=json.load(f)
+    except:
+        f.close()
+        j={}
+    f.close()
+      
+    print(j)
+
     for sen in connected.devs:
-        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0],form=sen[3],request_message=sen[4],delay=sen[5],read_length=sen[6])      #creates I2C object for each detected sensor
+        dev=sensor.I2C(name=sen[1],units=sen[2],address=sen[0],form=sen[3],request_message=sen[4],delay=sen[5],read_length=sen[6],auto=sen[7])      #creates I2C object for each detected sensor
         I2C_dev.append(dev)
         if not SensorReading.select().where(SensorReading.name==dev.name):      #if this sensor hasn't been used before creates an 'empty' reading of -1 that creates an entry but isn't parsed
             print("Missing :: {}".format(dev.name))
             dev.readEmpty()
             dev.store()
             print("Created Entry :: {}".format(dev.name))
-    return I2C_dev
+
+        if not dev.name in j:
+            print("Creating Default Equation for {}".format(dev.name))
+            j[dev.name]='1x+0'
+        f = open(equations,'w')          
+        json.dump(j,f)
+        f.close()
+    return I2C_dev,j
 
 def innit_control():
     """
@@ -135,8 +158,9 @@ def experimentThread(cycle_length,dev,con):
         for d in dev:
             #print('Reading :: {}'.format(d.name))
             try:
-                d.read()
-                d.store()
+                if d.auto:
+                    d.read()
+                    d.store(equations[d.name])
             except:
                 print("Error with Read of Sensor :: {}\n".format(d.name))
                 print(Exception)
@@ -229,7 +253,7 @@ def experimentThreadStart(cycle_length,dev,con):
 feedbackModules={}
 runningExperiments=experiment('./experiments').running
 running_start=experiment('./experiments').running_start
-I2C_dev=innit_connected()
+I2C_dev,equations=innit_connected()
 I2C_con=innit_control()
 print(I2C_dev)
 toDisplay=[]        #array for currently displayed graphs
@@ -331,10 +355,12 @@ def graphsUpdate(toDisplay,selected):
         dataData=[]
         exp=experiment('./experiments')     #init experiment 
         sen,timeStart,timeEnd,running=exp.info(selected)        #gets the information for the given experiment 
-        if timeEnd==-1:     #if the experiment hasn't ended, either still running or hasn't been started. Use current time. 
-            timeEnd=datetime.fromtimestamp(time.time()).timestamp()
         if timeStart==-1:     #if the experiment hasn't ended, either still running or hasn't been started. Use current time. 
             timeStart=datetime.fromtimestamp(time.time()).timestamp()
+        if timeEnd==-1:     #if the experiment hasn't ended, either still running or hasn't been started. Use current time. 
+            timeEnd=datetime.fromtimestamp(time.time()).timestamp()
+            if timeEnd-timeStart>3600:
+                timeStart=(datetime.fromtimestamp(time.time())-timedelta(hours=1)).timestamp()
         sen,dataData,dataTime=experiment_entries(timeStart,timeEnd,toDisplay)       #returns the data measurements during time interval 
         values1 = dataData
         time1=dataTime
@@ -407,7 +433,7 @@ def controls():
     enabled = []
     controls_values=[]
     pars = []
-    print(Control.select()[0].name)
+
     for dev in Sensor.select():     #for sensors in database
         sensors.append(dev.name)
         print("Name:{}".format(dev.name))
@@ -458,6 +484,18 @@ def updateControls():
             pars.append(par)
         return json.dumps({'sen':sensors,'val':values,'con':controls,'en':enabled,'con_val':controls_values,'par':pars})
 
+@app.route("/controls/calibrate",methods=['POST','GET'])
+def calibrate():
+    if request.method=='POST':
+        req=request.json
+        print(req)
+        equations[req[0]]=req[1]
+        eq=Path(dir+"/sensor/maths/equations.json")
+        f = open(eq,'w')          
+        json.dump(equations,f)
+        f.close()
+    return ('',204)
+
 @app.route("/controls/reset",methods=['POST'])
 def resetControls():
     """
@@ -487,7 +525,7 @@ def measure(side):
             for dev in I2C_dev:
                 if dev.name==sensor_measure:
                     dev.read()
-                    dev.store()
+                    dev.store(equations[dev.name])
                     #dev.print_info()
         elif side == "control":
             control_return=request.json
