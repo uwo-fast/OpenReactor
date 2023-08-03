@@ -273,7 +273,7 @@ dataLock=threading.Lock()
 if systemSettings.select().where(systemSettings.cycleLength).order_by(systemSettings.id.desc()).exists():
     THREAD_TIME=systemSettings.select().where(systemSettings.cycleLength).order_by(systemSettings.id.desc()).get().cycleLength
 else:
-    THREAD_TIME=5
+    THREAD_TIME=15
     database.cycleSet(THREAD_TIME)
 
 
