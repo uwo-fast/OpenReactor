@@ -2,7 +2,7 @@
 "DEVICES":[
    {
       "name":"Thermo 1",
-      "address":7,
+      "address":4,
       "unit":"C",
       "form":"byte",
       "req_msg":[84,1],
@@ -31,22 +31,12 @@
       "read_length":[31,31,31,31],
       "auto":[true,false,false,false]
 
-   },
-   {
-      "name":"Unknown",
-      "address":127,
-      "unit":"",
-      "form":"byte",
-      "req_msg":0,
-      "delay":0,
-      "read_length":0,
-      "auto":false
    }
 ],
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":7,
+      "address":4,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -68,45 +58,7 @@
       "def_state":false
    },
    {
-      "name":["Stirring","Pump 1"],
-      "address":1,
-      "unit":["",""],
-      "form":["byte","byte"],
-      "req_msg":[[],[]],
-      "delay":[0.0,0.0],
-      "read_length":[4,4],
-      "enabled":[false,false],
-      "params":[[{
-         "speed":0,
-         "control":"control.BREADmotor_I"
-       }],
-       [{
-         "speed":0,
-         "control":"control.BREADmotor_II"
-       }]],
-       "def_state":[false,false]
-    },
-   {
-      "name":["Base Control","Acid Control"],
-      "address":2,
-      "unit":["",""],
-      "form":["byte","byte"],
-      "req_msg":[[],[]],
-      "delay":[0.0,0.0],
-      "read_length":[4,4],
-      "enabled":[false,false],
-      "params":[[{
-         "speed":0,
-         "control":"control.BREADmotor_I"
-       }],
-       [{
-         "speed":0,
-         "control":"control.BREADmotor_II"
-       }]],
-       "def_state":[false,false]
-    },
-   {
-      "name":["Base Pump","Acid Pump"],
+      "name":["Pump 1","Stirring"],
       "address":2,
       "unit":["",""],
       "form":["byte","byte"],
@@ -126,7 +78,7 @@
     },
     {
       "name":"pH Control",
-      "address":2,
+      "address":3,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -137,7 +89,7 @@
          "input":0,
          "lastInput":0,
          "setpoint":0,
-         "kp":0,
+         "kp":5,
          "ki":0,
          "kd":0,
          "er":0,
