@@ -2,7 +2,7 @@
 "DEVICES":[
    {
       "name":"Thermo 1",
-      "address":7,
+      "address":10,
       "unit":"C",
       "form":"byte",
       "req_msg":[84,1],
@@ -14,7 +14,7 @@
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":7,
+      "address":10,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -37,7 +37,7 @@
    },
    {
       "name":["Pump Target","Pump Ramprate"],
-      "address":6,
+      "address":9,
       "unit":["",""],
       "form":["byte","byte"],
       "req_msg":[[],[]],
