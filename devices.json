@@ -36,7 +36,7 @@
       "def_state":false
    },
    {
-      "name":["Pump Target","Pump Ramprate"],
+      "name":["Pump Flow Rate","Pump Volume"],
       "address":9,
       "unit":["",""],
       "form":["byte","byte"],
