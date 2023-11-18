@@ -2,7 +2,7 @@
 "DEVICES":[
    {
       "name":"Thermo 1",
-      "address":4,
+      "address":13,
       "unit":"C",
       "form":"byte",
       "req_msg":[84,1],
@@ -36,7 +36,7 @@
 "CONTROLS":[
    {
       "name":"Heating Element 1",
-      "address":4,
+      "address":13,
       "unit":"",
       "form":"byte",
       "req_msg":[],
@@ -59,7 +59,7 @@
    },
    {
       "name":["Pump 1","Stirring"],
-      "address":2,
+      "address":14,
       "unit":["",""],
       "form":["byte","byte"],
       "req_msg":[[],[]],
@@ -78,7 +78,7 @@
     },
     {
       "name":"pH Control",
-      "address":3,
+      "address":15,
       "unit":"",
       "form":"byte",
       "req_msg":[],
