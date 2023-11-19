@@ -108,7 +108,7 @@ class I2C:
         if type(toWrite[0]) is str:
             toWrite=[ord(i) for i in toWrite[0]]
         if len(toWrite) !=0:
-            i2c.writeto(self.addr,bytes(toWrite),stop=False)
+            i2c.writeto(self.addr,bytes(toWrite))
         result=bytearray(self.read_len)
         time.sleep(self.delay)
         i2c.readfrom_into(self.addr,result)
@@ -127,7 +127,7 @@ class I2C:
         while( not i2c.try_lock()):
             time.sleep(0.1)
         toWrite=self.req_msg
-        i2c.writeto(self.addr,bytearray(toWrite),stop=False)
+        i2c.writeto(self.addr,bytearray(toWrite))
         i2c.unlock()
         i2c.deinit()
 
