@@ -8,17 +8,19 @@
 
 from peewee import *
 from playhouse.sqlite_ext import *
-#from playhouse.postgres_ext import *
+
+# from playhouse.postgres_ext import *
 import json
 
 
-db = SqliteExtDatabase('../openreactor.db', check_same_thread=False)
+db = SqliteExtDatabase("../openreactor.db", check_same_thread=False)
 
 
 # Define data model classes that inherit from the Peewee ORM Model class.
 # Each of these classes will be represented by a table in the database that
 # Peewee will create and manage.  Each row in the table is an instance of the
 # model (like a DHT sensor config, sensor reading, etc).
+
 
 # User will need to add a sensor for each thing they want to store.
 class Sensor(Model):
@@ -37,30 +39,33 @@ class SensorReading(Model):
     class Meta:
         database = db
 
+
 class Control(Model):
     name = CharField()
-    units=CharField()
-    def_state=BooleanField()
+    units = CharField()
+    def_state = BooleanField()
 
     class Meta:
         database = db
 
+
 class ControlReading(Model):
-    time=DateTimeField()
-    name=CharField()
-    value=FloatField()
-    params=JSONField()
-    enabled=BooleanField()
+    time = DateTimeField()
+    name = CharField()
+    value = FloatField()
+    params = JSONField()
+    enabled = BooleanField()
 
     class Meta:
         database = db
 
 
 class systemSettings(Model):
-    cycleLength=FloatField()
+    cycleLength = FloatField()
 
     class Meta:
         database = db
+
 
 class Data(object):
     """
@@ -71,11 +76,12 @@ class Data(object):
     def __init__(self):
         """Initialize access to the DHT sensor reading database."""
         db.connect(reuse_if_open=True)
-        db.create_tables([Sensor, SensorReading,Control,ControlReading,systemSettings], safe=True)
+        db.create_tables(
+            [Sensor, SensorReading, Control, ControlReading, systemSettings], safe=True
+        )
 
-    def cycleSet(self,len):
+    def cycleSet(self, len):
         systemSettings.get_or_create(cycleLength=len)
-
 
     def define_sensor(self, name, units):
         """Define the specified sensor and add it to the database.  If a sensor
@@ -83,11 +89,11 @@ class Data(object):
         """
         Sensor.get_or_create(name=name, units=units)
 
-    def define_control(self,name,units,def_state):
+    def define_control(self, name, units, def_state):
         """Define the specified control and add it to the database.  If a control
         of the same name, type, and pin exists then nothing will be added.
         """
-        Control.get_or_create(name=name,units=units,def_state=def_state)
+        Control.get_or_create(name=name, units=units, def_state=def_state)
 
     def get_control(self):
         """Returns a list of all the controls defined in the database."""
@@ -99,19 +105,23 @@ class Data(object):
         """
         return Sensor.select()
 
-    def add_control_status(self,time,name,value,params,enabled):
-        """Add a new status to the ControlReading table
-        """
-        ControlReading.create(time=time,name=name,value=value,params=params,enabled=enabled)
+    def add_control_status(self, time, name, value, params, enabled):
+        """Add a new status to the ControlReading table"""
+        ControlReading.create(
+            time=time, name=name, value=value, params=params, enabled=enabled
+        )
+
     def get_recent_readings(self, name, limit=30):
         """Return a list of the most recent sensor readings with the specified
         name.  By default returns the last 30 readings in descending time order,
         but you can request a different number with the limit parameter.
         """
-        return SensorReading.select() \
-                            .where(SensorReading.name == name) \
-                            .order_by(SensorReading.time.desc()) \
-                            .limit(limit)
+        return (
+            SensorReading.select()
+            .where(SensorReading.name == name)
+            .order_by(SensorReading.time.desc())
+            .limit(limit)
+        )
 
     def add_reading(self, time, name, value):
         """Add the specified sensor reading to the database."""

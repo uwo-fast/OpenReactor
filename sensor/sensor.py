@@ -1,8 +1,8 @@
 from tokenize import String
 import busio
 from .model import model
-from .model.model import Sensor,SensorReading
-from .maths.symbolicParser import var,parse
+from .model.model import Sensor, SensorReading
+from .maths.symbolicParser import var, parse
 import time
 import datetime
 import random
@@ -10,7 +10,8 @@ import struct
 from board import SCL, SDA
 from .sensor_format import form
 import peewee
-#def form(form,data):
+
+# def form(form,data):
 #    """
 #    contains the formatting for raw measurements
 #    Parameters
@@ -18,7 +19,7 @@ import peewee
 #    form : string
 #        name of formatting method
 #    data : byte array
-#        data to be formatted 
+#        data to be formatted
 #    Returns
 #    -------
 #    result : string
@@ -43,15 +44,30 @@ import peewee
 #    elif form=="byte":
 #        result=struct.unpack('f',data)
 #        result="".join(map(str,result))
-#        
+#
 #
 #    return result
+
 
 class I2C:
     """
     Class used to define I2C devices connected to the system, contains methods for measurement and database interfacing
     """
-    def __init__(self, name, units,form="atlas", address=99, request_message=0x52, delay=0.9, read_length=31,enabled=-1,params=-1,def_state=False,auto=True):
+
+    def __init__(
+        self,
+        name,
+        units,
+        form="atlas",
+        address=99,
+        request_message=0x52,
+        delay=0.9,
+        read_length=31,
+        enabled=-1,
+        params=-1,
+        def_state=False,
+        auto=True,
+    ):
         """
         contains all essential information for communication with the device, defaults to atlas pH sensor
         Parameters
@@ -80,114 +96,125 @@ class I2C:
         self.value = 0.000
         self.time = datetime.datetime.now()
         self.form = form
-        self.enabled=enabled
-        self.params=params
-        self.def_state=def_state
+        self.enabled = enabled
+        self.params = params
+        self.def_state = def_state
         self.db = model.Data()
-        self.def_params=params
-        self.auto=auto
-        if params==-1:
+        self.def_params = params
+        self.auto = auto
+        if params == -1:
             self.db.define_sensor(name, units)
-        elif params!=-1:
-            self.db.define_control(name,units,def_state)
-
+        elif params != -1:
+            self.db.define_control(name, units, def_state)
 
     def __del__(self):
         """Deconstructor to close the connection to the database."""
         self.db.close()
 
-
-    
     def read(self):
         """Reads from the sensor and places the reading in 'value'."""
-        i2c=busio.I2C(SCL, SDA, 400000)
+        i2c = busio.I2C(SCL, SDA, 400000)
         if type(self.req_msg) is list:
-            toWrite=self.req_msg
+            toWrite = self.req_msg
         else:
-            toWrite=[self.req_msg]
+            toWrite = [self.req_msg]
         if type(toWrite[0]) is str:
-            toWrite=[ord(i) for i in toWrite[0]]
-        if len(toWrite) !=0:
-            i2c.writeto(self.addr,bytes(toWrite))
-        result=bytearray(self.read_len)
+            toWrite = [ord(i) for i in toWrite[0]]
+        if len(toWrite) != 0:
+            i2c.writeto(self.addr, bytes(toWrite))
+        result = bytearray(self.read_len)
         time.sleep(self.delay)
-        i2c.readfrom_into(self.addr,result)
-        result = form(self.form,result)
-        #result=list(map(lambda x: chr(x & ~0x80), list(result)))
-        #result=result[self.msb_trim:self.lsb_trim]
-        #result="".join(map(str,result))
+        i2c.readfrom_into(self.addr, result)
+        result = form(self.form, result)
+        # result=list(map(lambda x: chr(x & ~0x80), list(result)))
+        # result=result[self.msb_trim:self.lsb_trim]
+        # result="".join(map(str,result))
         self.value = result
         self.time = datetime.datetime.now()
         i2c.deinit()
 
     def write(self):
         """Used for control systems, writes only"""
-        
-        i2c=busio.I2C(SCL, SDA, 400000)
-        while( not i2c.try_lock()):
+
+        i2c = busio.I2C(SCL, SDA, 400000)
+        while not i2c.try_lock():
             time.sleep(0.1)
-        toWrite=self.req_msg
-        i2c.writeto(self.addr,bytearray(toWrite))
+        toWrite = self.req_msg
+        i2c.writeto(self.addr, bytearray(toWrite))
         i2c.unlock()
         i2c.deinit()
 
-    def controlMessage(self,message,type='f'):
+    def controlMessage(self, message, type="f"):
         """Used to change the byte array that is written to a given address. Store must be called seperately."""
-        self.req_msg=message
-        #self.value=str(struct.unpack(type,self.req_msg)[0])
+        self.req_msg = message
+        # self.value=str(struct.unpack(type,self.req_msg)[0])
         self.time = datetime.datetime.now()
-        #print("req_msg :: {}".format(self.req_msg))
+        # print("req_msg :: {}".format(self.req_msg))
 
     def readFalse(self):
         """Reads a false random float as a measurement :: only use for testing"""
-        self.value=random.uniform(4.5,9.5)	
+        self.value = random.uniform(4.5, 9.5)
         self.time = datetime.datetime.now()
-     
+
     def readEmpty(self):
         """Reads a value of -1 as a measurement, used for init of sensor to avoid issues"""
-        self.value=0
+        self.value = 0
         self.time = datetime.datetime.now()
-        self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
+        self.db.add_reading(
+            time=self.time, name="{0}".format(self.name), value=self.value
+        )
 
-    def store(self,equation="1x+0"):
+    def store(self, equation="1x+0"):
         """Stores the value of the latest sensor reading into the database."""
-        if self.params==-1: #if sensor
-            if self.value==None:
+        if self.params == -1:  # if sensor
+            if self.value == None:
                 return
-            print("value: {} Type: {}".format(self.value,type(self.value)))
-            
-            eq=parse(equation)
-            self.value=str(eq.apply(float(self.value)))
-            print("Applying equation {} :: {}".format(eq.equation(),self.value))
+            print("value: {} Type: {}".format(self.value, type(self.value)))
 
-            self.db.add_reading(time=self.time, name='{0}'.format(self.name), value=self.value)
+            eq = parse(equation)
+            self.value = str(eq.apply(float(self.value)))
+            print("Applying equation {} :: {}".format(eq.equation(), self.value))
 
-        elif self.params!=-1:
-            self.db.add_control_status(time=self.time, name='{0}'.format(self.name), value=self.value,enabled=self.enabled,params=self.params)
+            self.db.add_reading(
+                time=self.time, name="{0}".format(self.name), value=self.value
+            )
 
-    def edit_params(self,newParams):
+        elif self.params != -1:
+            self.db.add_control_status(
+                time=self.time,
+                name="{0}".format(self.name),
+                value=self.value,
+                enabled=self.enabled,
+                params=self.params,
+            )
+
+    def edit_params(self, newParams):
         """Used to edit the params of the control system"""
-        self.params=newParams
+        self.params = newParams
         self.store()
 
-    def control_state(self,state):
+    def control_state(self, state):
         """Changes the enabled state of the control"""
-        self.enabled=state
+        self.enabled = state
 
     def reset_control(self):
         """Resets to default state"""
         print(self.def_state)
-        self.enabled=self.def_state
-        self.params=self.def_params
+        self.enabled = self.def_state
+        self.params = self.def_params
         self.store()
 
     def print_value(self):
         """Prints the most recent sensor value and time of its reading"""
         print("{0}: {1}\n".format(self.time, self.value))
 
-    def print_i2c_info(self):      
-        """Prints the sensor's i2c info"""  
-        print("Address: {0}\nRead request message: {1}\nRead delay time: {2} seconds\nLength of read: {3} bits\n".format(hex(self.addr), self.req_msg, self.delay, self.read_len))
+    def print_i2c_info(self):
+        """Prints the sensor's i2c info"""
+        print(
+            "Address: {0}\nRead request message: {1}\nRead delay time: {2} seconds\nLength of read: {3} bits\n".format(
+                hex(self.addr), self.req_msg, self.delay, self.read_len
+            )
+        )
 
     def print_db_info(self):
         """Prints the sensor's database info"""
@@ -198,4 +225,3 @@ class I2C:
         self.print_db_info()
         self.print_i2c_info()
         self.print_value()
-
