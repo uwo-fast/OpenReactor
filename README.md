@@ -14,8 +14,8 @@ sudo apt install -y git
 sudo apt install nodejs
 
 # Clone and enter repository
-git clone https://gitlab.com/mtu-most/most_openreactor
-cd most_openreactor
+git clone https://github.com/uwo-fast/openreactor
+cd openreactor
 
 # Run setup script
 ./first_time_setup.sh
