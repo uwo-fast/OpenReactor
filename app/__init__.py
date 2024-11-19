@@ -1,7 +1,12 @@
 from flask import Flask
 from config import Config
 
-app = Flask(__name__)
+import os
+
+basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+template_dir = os.path.join(basedir, "templates")
+
+app = Flask(__name__, template_folder=template_dir)
 app.config.from_object(Config)
 
 # Import utilities

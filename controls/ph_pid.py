@@ -12,6 +12,7 @@ class feedback:
         self.outputType = "b"
         self.baseID = 1
         self.acidID = 2
+        self.identifier = self.baseID
 
     def resetPumps(self):
         id_base = struct.pack(self.outputType, self.baseID)

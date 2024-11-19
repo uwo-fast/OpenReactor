@@ -64,6 +64,8 @@ def update(graphID, name):
     if request.method == "GET":
         print(toDisplay)
         print(f"Selected: {name}")
+        if int(graphID) >= len(toDisplay):
+            return jsonify({"error": "Graph ID out of range"}), 400
         time_values, values, title, toParse = graphsUpdate(
             toDisplay[int(graphID)], name
         )
@@ -102,11 +104,10 @@ def add():
 def graphs():
     """
     Loads the default graphs page.
-
-    Returns
-    ------
-        Renders graphs.html, also sends the connected devices.
     """
+    # Initialize toDisplay with a default value if empty
+    if not toDisplay:
+        toDisplay.append("-1")
     return render_template("graphs.html", Devices=devices)
 
 
