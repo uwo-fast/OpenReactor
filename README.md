@@ -115,12 +115,12 @@ An example of <i>devices.json</i>
       "params":[{
          "min":0,
          "max":0,
-         "control":"control.demo"
+         "control":"controls.demo"
       },
       {
          "min":0,
          "max":0,
-         "control":"control.demo"
+         "control":"controls.demo"
       }
    ],
       "def_state":[true,false]
@@ -138,7 +138,7 @@ An example of <i>devices.json</i>
          "min":0,
          "max":0,
          "target":100,
-         "control":"control.demo"
+         "control":"controls.demo"
       },
       "def_state":true
    }
@@ -171,7 +171,7 @@ In the "CONTROLS" section
 
 - "params : a sub-dictionary of custom parameters for each control system.
   - parameters must be a single integer to be parsed by interface at the moment but can have any number of parameters.  
-  - **NOTE** that the only required parameter is "control" where in this case model.demo is the absolute path to the feedback mechanism .py file (control.demo is equivalent to control/demo.py).
+  - **NOTE** that the only required parameter is "control" where in this case model.demo is the absolute path to the feedback mechanism .py file (controls.demo is equivalent to control/demo.py).
 - "def_state" the default state of the control systems, (on : true, off : false).
 
 For "CONTROLS" in the first section two mechanisms are defined that will write to the same I2C address (in this case 97). This must be done in this manner and they cannot be listed seperately as you would for devices with seperate addresses.

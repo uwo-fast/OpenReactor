@@ -42,12 +42,12 @@ def_state : the default state of the control systems, on : true, off : false
       "params":[{
          "min":0,
          "max":0,
-         "control":"control.demo"
+         "control":"controls.demo"
       },
       {
          "min":0,
          "max":0,
-         "control":"control.demo"
+         "control":"controls.demo"
       }
    ],
       "def_state":[true,false]
@@ -65,7 +65,7 @@ def_state : the default state of the control systems, on : true, off : false
          "min":0,
          "max":0,
          "target":100,
-         "control":"control.demo"
+         "control":"controls.demo"
       },
       "def_state":true
    }

@@ -164,7 +164,7 @@ class I2C:
         self.store()
 
     def control_state(self, state):
-        """Changes the enabled state of the control."""
+        """Changes the enabled state of the controls."""
         self.enabled = state
 
     def reset_control(self):

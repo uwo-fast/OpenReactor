@@ -131,7 +131,7 @@
                "kd": 0,
                "er": 0,
                "thermocouple": 1,
-               "control": "control.bread_heater_pid"
+               "control": "controls.bread_heater_pid"
             }
          ],
          "def_state": false
@@ -170,13 +170,13 @@
             [
                {
                   "speed": 0,
-                  "control": "control.bread_motor_i"
+                  "control": "controls.bread_motor_i"
                }
             ],
             [
                {
                   "speed": 0,
-                  "control": "control.bread_motor_ii"
+                  "control": "controls.bread_motor_ii"
                }
             ]
          ],
@@ -205,7 +205,7 @@
                "er": 0,
                "Base Pump": 0,
                "Acid Pump": 0,
-               "control": "control.ph_pid"
+               "control": "controls.ph_pid"
             }
          ],
          "def_state": false

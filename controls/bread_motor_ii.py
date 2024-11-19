@@ -4,7 +4,7 @@ from database.model import ControlReading
 
 class feedback:
     """
-    Feedback mechanism for Motor II control.
+    Feedback mechanism for Motor II controls.
     """
 
     def __init__(self, name, I2C):
