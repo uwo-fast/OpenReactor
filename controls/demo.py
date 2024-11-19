@@ -1,8 +1,8 @@
-from sensor import sensor
+from sensors import sensor
 import time
 import datetime
 import struct
-from sensor.model.model import Sensor, SensorReading, Control, ControlReading, Data
+from database.model import Sensor, SensorReading, Control, ControlReading, Data
 
 """
 An example of a feedback mechanism. 

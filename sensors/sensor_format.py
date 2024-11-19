@@ -3,21 +3,23 @@ import struct
 
 def form(form, data):
     """
-    contains the formatting for raw measurements
+    Contains the formatting for raw measurements.
+
     Parameters
     ----------
     form : string
-        name of formatting method
+        Name of formatting method.
     data : byte array
-        data to be formatted
+        Data to be formatted.
+
     Returns
     -------
     result : string
-        formatted data
+        Formatted data.
     """
     result = -1
     form = form.casefold()
-    print("form:{}".format(form))
+    print(f"Form: {form}")
 
     if form == "temp_ada":
         val = data[0] << 8 | data[1]

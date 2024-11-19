@@ -6,16 +6,16 @@ import time
 
 class experiment(object):
     """
-    class used to manage the experiment JSON files, requires the local directory as an init argument.
+    Class used to manage the experiment JSON files, requires the local directory as an init argument.
     """
 
     def __init__(self, dir):
         """
-        creates the experiment object
+        Creates the experiment object.
         Parameters
         ----------
         dir : string
-            the directory where the experiment files are located
+            The directory where the experiment files are located.
         """
         self.dir = dir
         self.running = 0
@@ -31,13 +31,14 @@ class experiment(object):
 
     def list(self):
         """
-        Lists all the .json experiment files stored in the directory as defined by the self.dir
+        Lists all the .json experiment files stored in the directory as defined by self.dir.
+
         Returns
         -------
-        f : array
-            contains strings with the filepaths for each file
-        r : array
-            contains strings with the file names for each file
+        f : list
+            Contains strings with the filepaths for each file.
+        r : list
+            Contains strings with the file names for each file.
         """
         dir = self.dir
         files = glob.glob(os.path.join(dir, "*.*"))  # all files in directory
@@ -53,15 +54,17 @@ class experiment(object):
 
     def exists(self, name):
         """
-        Checks to see if an already exists in the current directory
+        Checks to see if an experiment already exists in the current directory.
+
         Parameters
         ----------
         name : string
-            name of experiment
+            Name of the experiment.
+
         Returns
         -------
-        state : boolean
-            if the file exists or not
+        state : bool
+            True if the file exists, False otherwise.
         """
         file = name
         f, existing = self.list()
@@ -73,26 +76,28 @@ class experiment(object):
 
     def new(self, name):
         """
-        Creates new experiment
+        Creates a new experiment.
+
         Parameters
         ----------
         name : string
-            the name of the experiment that is being created
-        Results
+            The name of the experiment that is being created.
+
+        Returns
         -------
-        created : boolean
-            if the file has been created or not
+        created : bool
+            True if the file has been created, False otherwise.
         """
         exists = self.exists(name)
         created = False
         if not exists:
-            f = open(self.dir + "/" + name + ".json", "w")
+            f = open(os.path.join(self.dir, name + ".json"), "w")
             toJson = {
                 "name": name,
                 "startTime": -1,
                 "endTime": -1,
                 "running": 0,
-            }  # inits with start and end times of -1 and state of 0 indicating that the experiment has no data.
+            }  # Initialize with default values
             json.dump(toJson, f)
             created = True
             f.close()
@@ -100,92 +105,86 @@ class experiment(object):
 
     def start(self, name):
         """
-        Defines start time of the experiment in seconds since Unix Epoch
+        Defines the start time of the experiment in seconds since Unix Epoch.
+
         Parameters
         ----------
         name : string
-            the name of the experiment to start
+            The name of the experiment to start.
+
         Returns
         -------
-        boolean
-            if the start time was defined
+        bool
+            True if the start time was defined.
         """
-        f = open(self.dir + "/" + name + ".json", "r")
-        fromJson = json.load(f)
-        f.close()
-        f = open(self.dir + "/" + name + ".json", "w")
-        fromJson["startTime"] = (
-            time.time()
-        )  # time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
-        fromJson["running"] = (
-            1  # sets running to 1, indicates that the experiment is actively running.
-        )
-        json.dump(fromJson, f)
-        f.close()
+        filepath = os.path.join(self.dir, name + ".json")
+        with open(filepath, "r") as f:
+            fromJson = json.load(f)
+        fromJson["startTime"] = time.time()
+        fromJson["running"] = 1  # Experiment is actively running.
+        with open(filepath, "w") as f:
+            json.dump(fromJson, f)
         self.running += 1
         return True
 
     def end(self, name):
         """
-        Defines end time of the experiment
+        Defines the end time of the experiment.
+
         Parameters
         ----------
         name : string
-            the name of the experiment to end
+            The name of the experiment to end.
+
         Returns
         -------
-        boolean
-            if the end time was defined
+        bool
+            True if the end time was defined.
         """
-        f = open(self.dir + "/" + name + ".json", "r")
-        fromJson = json.load(f)
-        f.close()
-        f = open(self.dir + "/" + name + ".json", "w")
-        fromJson["endTime"] = (
-            time.time()
-        )  # time.strftime("%Y-%m-%d %H:%M:%S",time.localtime())
-        fromJson["running"] = (
-            2  # sets running to 2, indicates that the experiment is finished
-        )
-        json.dump(fromJson, f)
-        f.close()
+        filepath = os.path.join(self.dir, name + ".json")
+        with open(filepath, "r") as f:
+            fromJson = json.load(f)
+        fromJson["endTime"] = time.time()
+        fromJson["running"] = 2  # Experiment is finished.
+        with open(filepath, "w") as f:
+            json.dump(fromJson, f)
         self.running -= 1
         return True
 
     def delete(self, name):
         """
-        Deletes experiment
+        Deletes an experiment.
+
         Parameters
         ----------
         name : string
-            the name of the experiment to delete
+            The name of the experiment to delete.
+
         Returns
         -------
-        boolean
-            if the experiment was deleted
+        bool
+            True if the experiment was deleted.
         """
-        os.remove(self.dir + "/" + name + ".json")
+        os.remove(os.path.join(self.dir, name + ".json"))
         return True
 
     def info(self, name):
         """
-        Returns the name, start, and end times for experiment.
+        Returns the name, start time, end time, and running status for the experiment.
+
         Parameters
         ----------
         name : string
-            the name of the experiment
+            The name of the experiment.
+
         Returns
         -------
-        tuple
-            returns the name,start time, end time, and running status as a tuple
+        list
+            Contains the name, start time, end time, and running status.
         """
-        # with open(self.dir+"/"+name+",json","r") as read_file:
-        #    fromJson=json.loads(read_file)
-
-        f = open(self.dir + "/" + name + ".json", "r")
-        fromJson = json.load(f)
-        # print(fromJson)
-        f.close()
+        filepath = os.path.join(self.dir, name + ".json")
+        with open(filepath, "r") as f:
+            fromJson = json.load(f)
         return [
             fromJson["name"],
             fromJson["startTime"],
