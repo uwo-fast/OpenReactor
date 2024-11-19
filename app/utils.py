@@ -27,6 +27,57 @@ basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 database = Data()
 
 
+def graphsUpdate(toDisplay, selected):
+    """
+    Retrieves and formats data for graphing.
+
+    Parameters
+    ----------
+    toDisplay : string
+        Name of the sensor to display.
+    selected : string
+        Name of selected experiment that is to be displayed.
+
+    Returns
+    -------
+    tuple
+        Contains arrays that have the time of measurement, value of measurement,
+        graph title, formatted time of measurement.
+    """
+    print(toDisplay)
+    if toDisplay == "-1":
+        time1 = []
+        values1 = []
+        title1 = ""
+        toParse = []
+    else:
+        title1 = f"{toDisplay} over time"
+        dataTime = []
+        dataData = []
+        exp = experiment(os.path.join(basedir, "experiments"))  # Initialize experiment
+        sen, timeStart, timeEnd, running = exp.info(selected)  # Get experiment info
+        current_time = datetime.now().timestamp()
+
+        # Adjust timeStart and timeEnd if they are not set
+        if timeStart == -1:
+            timeStart = current_time - 3600  # Default to last hour
+        if timeEnd == -1:
+            timeEnd = current_time
+
+        sen, dataData, dataTime = experiment_entries(timeStart, timeEnd, toDisplay)
+        values1 = dataData
+        time1 = dataTime
+
+        # Normalize time values relative to the first timestamp
+        if time1:
+            first = time1[0]
+            time1 = [(t - first) / 3600 for t in time1]
+        else:
+            time1 = []
+        toParse = list(zip(dataTime, values1))
+        print("Fetched Data")
+    return time1, values1, title1, toParse
+
 # Utility functions
 def innit_connected():
     """

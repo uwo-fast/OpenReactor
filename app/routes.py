@@ -1,4 +1,4 @@
-from app import app
+from app import utils
 from flask import render_template, request, jsonify
 from app import (
     database,
@@ -76,11 +76,7 @@ def update(graphID, name):
         print(data[0])
         toDisplay[int(graphID)] = data[0]
         return jsonify(data)
-
-
-# Note: Removed the graphsUpdate function definition from routes.py
-# It should now be imported from utils.py via app
-
+    
 
 @app.route("/add", methods=["POST"])
 def add():
