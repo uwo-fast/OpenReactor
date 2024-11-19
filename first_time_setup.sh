@@ -24,5 +24,5 @@ sudo chmod -R 777 ./
 pip install -r requirements.txt
 pip3 install --upgrade adafruit-blinka adafruit-platformdetect
 # Install NPM packages
-cd static
+cd app/static
 npm i 
