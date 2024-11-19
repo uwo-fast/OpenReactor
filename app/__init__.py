@@ -6,7 +6,6 @@ app.config.from_object(Config)
 
 # Import utilities
 from app import utils
-from app import routes
 
 # Expose variables to app package
 database = utils.database
