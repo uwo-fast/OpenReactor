@@ -1,4 +1,4 @@
-from app import utils
+from app import app, utils
 from flask import render_template, request, jsonify
 from app import (
     database,
@@ -29,7 +29,6 @@ import time
 from datetime import datetime, timedelta
 import os
 from pathlib import Path
-
 
 @app.route("/")
 def index():
