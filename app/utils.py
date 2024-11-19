@@ -38,7 +38,7 @@ def innit_connected():
     connected = ct()
     I2C_dev = []
 
-    equations = Path(dir + "/sensors/maths/equations.json")
+    equations = Path(basedir + "/sensors/maths/equations.json")
     equations.touch(exist_ok=True)
     f = open(equations)
     try:
