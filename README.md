@@ -1,3 +1,9 @@
+> ### 🚨 Archived Repository
+> 
+> This repository has been **archived** and is no longer actively maintained. Development has continued at [uwo-fast/loafware](https://github.com/uwo-fast/loafware).
+> 
+> ➡️ Please visit the new repository for the latest updates and documentation: [uwo-fast/loafware](https://github.com/uwo-fast/loafware).
+
 # OpenReactor
 An easily extensible open source turbidostat with pH and dissolved oxygen control, written in python3.
 
